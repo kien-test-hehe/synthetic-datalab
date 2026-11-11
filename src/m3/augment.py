@@ -34,8 +34,19 @@ def _header(row: dict) -> str:
 def _foreign_docs(row: dict, seed: int, index: int) -> list[dict]:
     # New, out-of-distribution fictional companies outside the main 0..worlds-1.
     sector = row["sector"]
-    outsider = create_world(seed + 73, 300000 + index, sector)
-    audit_world(outsider)
+    # A random stress-path may violate the toy ledger's positivity constraints.
+    # Use deterministic rejection sampling; do NOT weaken financial identities.
+    outsider = None
+    for attempt in range(100):
+        try:
+            candidate = create_world(seed + 73 + attempt, 300000 + index, sector)
+            audit_world(candidate)
+        except AssertionError:
+            continue
+        outsider = candidate
+        break
+    if outsider is None:
+        raise RuntimeError("Could not generate a valid distractor company world")
     lang = row["language_pair"].split("-")[0]
     lookup = build_documents(outsider, lang, (index + 2) % 3)
     # Prefer same document types and fiscal periods, but from a *different* company.
