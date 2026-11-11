@@ -1,0 +1,1 @@
+"""FinancialDocLab synthetic-only dataset generator."""
