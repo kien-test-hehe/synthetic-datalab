@@ -13,8 +13,15 @@ def rnd_percent(value: int, percent: int) -> int:
     return round(value * percent / 100)
 
 
-def create_world(seed: int, index: int, sector: str) -> dict:
-    rng = random.Random(f"financialdoclab.m2.{seed}.{index}")
+class UnviableWorld(ValueError):
+    """A sampled accounting path violates positivity, not the ledger identities."""
+
+
+def _create_world_once(seed: int, index: int, sector: str, attempt: int = 0) -> dict:
+    key = f"financialdoclab.m2.{seed}.{index}"
+    if attempt:
+        key += f".retry.{attempt}"
+    rng = random.Random(key)
     name = f"Fictional Meridian {index:04d}"  # distinct from any real source document
     cash, ar, inventory, ppe, ap, debt = (
         rng.randint(600, 2050),rng.randint(190,420),rng.randint(230,570),
@@ -74,8 +81,8 @@ def create_world(seed: int, index: int, sector: str) -> dict:
         assert equity == prior_equity + net_income - dividends
         assert cash == begin_cash + cfo + cfi + cff
         assert assets == liabilities + equity
-        assert min(ar, inventory, ap, debt, cash, ppe, equity) > 0
-        assert net_income > 0
+        if min(ar, inventory, ap, debt, cash, ppe, equity) <= 0 or net_income <= 0:
+            raise UnviableWorld("Sampled financial world has non-positive required balances")
         years[str(year)] = dict(
             year=year, revenue=revenue, cogs=cogs, gross_profit=revenue-cogs,
             cash_opex=cash_opex, dep=dep, interest=interest, pretax=pretax,
@@ -115,6 +122,20 @@ def create_world(seed: int, index: int, sector: str) -> dict:
                 original_revenue_24=originally_reported_24,
                 currency="USD million", standard="synthetic simplified accrual accounting",
                 source="entirely_fictional_event_simulator", seed=seed)
+
+
+def create_world(seed: int, index: int, sector: str) -> dict:
+    """Deterministically reject negative-cash/negative-equity simulations.
+
+    The first attempt is byte-identical to M2. Only financially unviable random
+    paths use a new RNG seed. Accounting identity assertions are never swallowed.
+    """
+    for attempt in range(128):
+        try:
+            return _create_world_once(seed, index, sector, attempt)
+        except UnviableWorld:
+            continue
+    raise UnviableWorld(f"No viable world for seed={seed}, index={index}, sector={sector}")
 
 
 def audit_world(w):
