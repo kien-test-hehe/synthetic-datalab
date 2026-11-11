@@ -1,0 +1,54 @@
+{
+  "dataset": "FinancialDocLab-HandAuthored-M1",
+  "prepared_at": "2026-11-11",
+  "cases": 40,
+  "rows": 100,
+  "source": "40 original fictional manually composed cases with 100 authored questions and worked answers",
+  "split": {
+    "train": {
+      "cases": 32,
+      "rows": 80
+    },
+    "dev": {
+      "cases": 4,
+      "rows": 10
+    },
+    "test": {
+      "cases": 4,
+      "rows": 10
+    }
+  },
+  "groups": {
+    "income": 20,
+    "balance_sheet": 20,
+    "cash_flow": 20,
+    "notes_temporal_consolidation": 20,
+    "cross_sector_risks": 20
+  },
+  "language_pairs": {
+    "vi-vi": 25,
+    "en-en": 25,
+    "en-vi": 25,
+    "vi-en": 25
+  },
+  "answerability": {
+    "answerable": 81,
+    "insufficient": 19
+  },
+  "difficulty": {
+    "L2": 12,
+    "L3": 50,
+    "L4": 33,
+    "L5": 5
+  },
+  "arithmetic_checks": 114,
+  "structural_errors": 0,
+  "arithmetic_errors": 0,
+  "exact_duplicate_questions": 0,
+  "question_pairs_with_jaccard_at_least_0_60": 0,
+  "assistant_evidence_citations": "present in all 100 outputs",
+  "split_leakage_by_case": 0,
+  "model_baseline": "NOT RUN — a local Ollama inference runner is supplied",
+  "professional_accounting_review": "NOT DONE — domain expert review recommended",
+  "note": "Counts verified through GitHub-sourced rows and an independent numerical expression evaluator. Validation script committed for reruns; CI status depends on repository GitHub Actions settings."
+}
