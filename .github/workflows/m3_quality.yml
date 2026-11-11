@@ -1,0 +1,38 @@
+name: M3 synthetic robustness and 14.4K QA
+on:
+  push:
+    branches: [feature/m3-eval-robustness]
+    paths:
+      - 'src/m3/**'
+      - 'src/m2/**'
+      - 'tests/test_m3.py'
+      - '.github/workflows/m3_quality.yml'
+  pull_request:
+    paths:
+      - 'src/m3/**'
+      - 'src/m2/**'
+      - 'tests/test_m3.py'
+      - '.github/workflows/m3_quality.yml'
+  workflow_dispatch:
+
+jobs:
+  validate_and_build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Unit tests — M1, M2, M3
+        run: python -m unittest discover -s tests -v
+      - name: Build M3 dataset (800 worlds, 14,400 rows)
+        run: python -m src.m3.augment --worlds 800 --seed 42 --out sft/m3/outputs
+      - name: Strict provenance, math, split and citation checks
+        run: python -m src.m3.validate --worlds 800 --root sft/m3/outputs
+      - name: Upload JSONL datasets and manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: financialdoclab-m3-14400
+          path: sft/m3/outputs/
+          retention-days: 30
