@@ -1,0 +1,30 @@
+name: M2 Synthetic Financial QA Build
+on:
+  push:
+    branches: [feature/financialdoclab-m2]
+    paths: [".github/workflows/m2_dataset.yml", "src/m2/**", "tests/test_m2.py", "sft/m2/**"]
+  pull_request:
+    paths: [".github/workflows/m2_dataset.yml", "src/m2/**", "tests/test_m2.py", "sft/m2/**"]
+  workflow_dispatch:
+
+jobs:
+  dataset:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run all tests
+        run: python -m unittest discover -s tests -v
+      - name: Generate 1,600 synthetic SFT records
+        run: python -m src.m2.build_m2 --worlds 200 --seed 42 --out sft/m2/outputs
+      - name: Verify data and accounting invariants
+        run: python -m src.m2.validate_m2 --out sft/m2/outputs > sft/m2/outputs/quality_report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: financialdoclab-m2-jsonl
+          path: sft/m2/outputs/
+          retention-days: 30
