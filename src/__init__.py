@@ -1,1 +1,1 @@
-FinancialDocLab: authored synthetic financial QA dataset, evaluation and validation utilities.
+"""FinancialDocLab: hand-authored financial QA data utilities."""
