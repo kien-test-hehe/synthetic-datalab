@@ -1,6 +1,6 @@
 """Validate M1 hand-authored casebook, SFT exports and arithmetic.
 
-Stdlib only. Does not call models, use network, train, or read real evaluation data.
+Stdlib only. Does not call models, use network, train, or read real evaluation data.\nCI verifies the original authored casebook against every exported SFT row.
 """
 from __future__ import annotations
 import argparse
