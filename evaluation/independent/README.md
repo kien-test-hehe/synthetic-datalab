@@ -1,11 +1,18 @@
-# Independent fictional evaluation pilot
+# Independent fictional financial benchmark (M6)
 
-20 individually authored cases (8 dev, 12 test), 60 QA. Evaluation only; never include in training, validation-based training selection for test, or SFT augmentation.
+Evaluation only. Original 60-QA pilot is preserved in cases.jsonl. Additional individually authored cases are in batches/. Never include this directory in SFT or augmentation. Target: 500 dev / 1,000 test; progress is recorded in exports/manifest.json.
 
-Run after building the authored corpus:
+## Build and run local baseline
+
 ```bash
+python -m src.authored_export
 python -m src.eval.independent
-python -m src.eval.model_eval --kind synthetic --dataset evaluation/independent/exports/dev.jsonl --model YOUR_LOCAL_MODEL --output evaluation/results/independent_dev.jsonl
+curl --noproxy '*' http://127.0.0.1:11434/api/tags
+cp evaluation/independent/models.example.json models.local.json
+# Edit names, exact digests and untouched checkpoint/quantization attestations.
+python -m src.eval.baseline_matrix --models models.local.json --output evaluation/results/baseline_dev_v1
 ```
 
-For test, use test.jsonl only after finalizing the model and settings. Gold arithmetic and exact citation sets are an automatic proxy. Review qualitative answers and explanation correctness manually. Exact leakage checks cover the full authored corpus, not semantic novelty or external benchmark contamination. This is a pilot, not the planned larger independent benchmark.
+Use locally installed original, unadapted instruction checkpoints (e.g. your chosen small Qwen variants); exact Ollama tags vary by installation. The matrix never pulls models or calls remote inference. A digest pins the installed artifact, not its training history. Use a new output directory for each run. For a smoke test add --limit 6 on dev only. Freeze settings and dataset before test; add --split test --unlock-test to run all test rows. Do not choose hyperparameters on test. Same prompt, data and decoding settings are required for before/after comparison via src.eval.compare.
+
+Automatic numeric, unit, abstention and exact citation checks are proxies. Qualitative and narrative correctness require human review. Exact leakage checks are not proof of semantic or pretraining independence. No measured Qwen results until a real local run completes.

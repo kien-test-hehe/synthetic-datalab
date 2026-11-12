@@ -31,8 +31,11 @@ def build(cases_path="evaluation/independent/cases.jsonl",authored_root="sft/aut
     forbidden_questions={normalized_question(r["question"]) for r in old}
     forbidden_contexts={evidence_hash(r["evidence"]) for r in old}
     forbidden_evidence={normalized_question(e["text"]) for r in old for e in r["evidence"]}
-    rows=[];seen_cases=set();seen_contexts=set();seen_questions=set();seen_ids=set()
-    cases=read_jsonl(cases_path)
+    rows=[];seen_cases=set();seen_contexts=set();seen_questions=set();seen_ids=set();seen_evidence={}
+    cases_path=Path(cases_path)
+    # The original pilot remains unchanged; new batches live alongside it.
+    paths=[cases_path]+sorted(cases_path.parent.glob("batches/*.jsonl")) if cases_path.name=="cases.jsonl" else [cases_path]
+    cases=[c for path in paths for c in read_jsonl(path)]
     for case in cases:
         cid=case["case_id"];split=case["split"]
         assert cid.startswith("IE-") and cid not in forbidden_cases|seen_cases
@@ -45,6 +48,12 @@ def build(cases_path="evaluation/independent/cases.jsonl",authored_root="sft/aut
         assert context not in forbidden_contexts|seen_contexts
         assert not ({normalized_question(e["text"]) for e in evidence}&forbidden_evidence)
         seen_contexts.add(context)
+        for e in evidence:
+            key=normalized_question(e["text"])
+            previous=seen_evidence.setdefault(key, (split,cid))
+            assert previous==(split,cid), (cid, "duplicate evaluation evidence", previous)
+        tags=case.get("adversarial_tags",["legacy_pilot"]) 
+        assert tags and all(isinstance(t,str) and t.strip() for t in tags)
         for q in case["qas"]:
             rid=cid+"-"+q["id"];question=normalized_question(q["question"])
             assert rid not in forbidden_ids|seen_ids
@@ -68,6 +77,7 @@ def build(cases_path="evaluation/independent/cases.jsonl",authored_root="sft/aut
             row={"id":rid,"case_id":cid,"split":split,"category":case["category"],"language_pair":case["language_pair"],
                  "source":SOURCE,"source_type":"fully_synthetic_only","variant_type":"independent_evaluation",
                  "accounting_assumptions":case["assumptions"],"evidence":evidence,"question":q["question"],
+                 "adversarial_tags":q.get("adversarial_tags",tags),
                  "answer":answer,"oracle":oracle,"checks":q["checks"],"evidence_ids":cites,
                  "answerability":"insufficient" if oracle["kind"]=="insufficient" else "answerable",
                  "messages":[{"role":"system","content":system},{"role":"user","content":user},{"role":"assistant","content":answer}]}
@@ -82,8 +92,14 @@ def build(cases_path="evaluation/independent/cases.jsonl",authored_root="sft/aut
         counts[split]={"rows":len(selected),"cases":len({r["case_id"] for r in selected}),"oracle_kinds":dict(Counter(r["oracle"]["kind"] for r in selected)),"sha256":hashlib.sha256(path.read_bytes()).hexdigest()}
     assert all(counts[s]["rows"]>0 for s in counts)
     report={"source":SOURCE,"splits":counts,"authored_train_sha256":manifest["splits"]["train"]["sha256"],
-            "casebook_sha256":hashlib.sha256(Path(cases_path).read_bytes()).hexdigest(),
-            "exact_leakage_checks":"pass","limitations":["Small pilot, not a representative financial benchmark.","No exact question, case or evidence overlap with authored corpus; conceptual skill overlap possible.","No expert adjudication or model evaluation performed."]}
+            "casebook_sha256":hashlib.sha256(cases_path.read_bytes()).hexdigest(),
+            "casebook_files":{str(path):hashlib.sha256(path.read_bytes()).hexdigest() for path in paths},
+            "target":{"dev":500,"test":1000},
+            "remaining":{s:max(0,n-counts[s]["rows"]) for s,n in (("dev",500),("test",1000))},
+            "categories":dict(Counter(r["category"] for r in rows)),
+            "languages":dict(Counter(r["language_pair"] for r in rows)),
+            "adversarial_tags":dict(Counter(t for r in rows for t in r["adversarial_tags"])),
+            "exact_leakage_checks":"pass","limitations":["In-progress fictional benchmark, not representative of all real-world finance questions.","No exact question, case or evidence overlap with authored corpus; conceptual skill overlap possible.","No expert adjudication or model evaluation performed."]}
     (out/"manifest.json").write_text(json.dumps(report,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
     return report
 

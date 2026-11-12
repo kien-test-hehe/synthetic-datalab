@@ -1,0 +1,16 @@
+{
+  "models": [
+    {
+      "id": "qwen_small",
+      "name": "REPLACE_WITH_EXACT_LOCAL_OLLAMA_TAG",
+      "digest": "REPLACE_WITH_API_TAGS_DIGEST",
+      "untouched_attestation": "Operator confirms unadapted original checkpoint; record exact upstream revision and quantization here."
+    },
+    {
+      "id": "qwen_medium",
+      "name": "REPLACE_WITH_SECOND_EXACT_LOCAL_TAG",
+      "digest": "REPLACE_WITH_API_TAGS_DIGEST",
+      "untouched_attestation": "Record original checkpoint and quantization."
+    }
+  ]
+}
