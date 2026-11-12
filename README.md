@@ -48,3 +48,7 @@ For locally computed multilingual embeddings, use `src.eval.dense` with `sentenc
 ## M4 original cases and local experiments
 
 See [M4 experimental protocol](docs/M4_EXPERIMENTS.md). M1 + M4 contain 140 truly individually composed QA (112 training). The larger 11,632-row combined training arm includes programmatically instantiated M3 rows; it is not a fully hand-authored corpus. Never mix old M2 split files into M3 directly: use a frozen world split. No actual model fine-tuning or local GPU inference has yet been run.
+
+## Authored-only corpus (active priority)
+
+See [sft/authored/README.md](sft/authored/README.md). Two new manually composed batches contribute 180 training rows, for a combined **320 authored QA / 292 train / 14 dev / 14 test**. Run `python -m src.authored_export` to obtain the strictly authored-only export. Do not count M2/M3 generated rows toward the 10,000 authored training-row goal. No model training has yet been run.
