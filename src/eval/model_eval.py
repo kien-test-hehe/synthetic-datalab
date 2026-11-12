@@ -172,6 +172,10 @@ def grade(example,parsed):
 
 def aggregate(rows):
     out={"attempted":len(rows),"completed":sum(r["error"] is None for r in rows),"error_count":sum(r["error"] is not None for r in rows)}
+    eligible=[r for r in rows if r["gold_oracle"]["kind"] in ("numeric","insufficient")]
+    out["auto_eligible"]=len(eligible)
+    out["auto_pass_end_to_end"]=sum(r["scores"].get("auto_pass") is True for r in eligible)/len(eligible) if eligible else None
+    out["completion_rate"]=out["completed"]/len(rows) if rows else None
     for metric in ("valid_json","numeric_correct","unit_correct","answerability_correct","auto_pass","citation_precision","citation_recall"):
         v=[r["scores"][metric] for r in rows if r["scores"].get(metric) is not None]
         out[metric]={"scored":len(v),"mean":sum(v)/len(v) if v else None}
@@ -206,6 +210,7 @@ def run(args,call=ollama):
             row={"id":ex["id"],"group":ex["group"],"language_pair":ex["language_pair"],"variant":ex["variant"],
                  "model":args.model,"gold_answer":ex["gold_answer"],"gold_oracle":ex["oracle"],
                  "gold_citations":ex["gold_citations"],"allowed_citations":ex["allowed_citations"],
+                 "prompt_sha256":hashlib.sha256(json.dumps(ex["messages"],ensure_ascii=False,sort_keys=True).encode()).hexdigest(),
                  "raw_response":raw_output,"prediction":parsed,"scores":grade(ex,parsed),
                  "error":error,"token_counts":tokens,"latency_seconds":round(time.monotonic()-start,4)}
             f.write(json.dumps(row,ensure_ascii=False)+"\n");f.flush();results.append(row)

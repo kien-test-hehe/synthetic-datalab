@@ -22,6 +22,13 @@ def compare(base_path, adapted_path):
         return {r["id"]:r for r in rows}
     bm=read(base_path);am=read(adapted_path)
     if set(bm)!=set(am) or set(bm)!=set(b["evaluated_ids"]):raise ValueError("Unmatched prediction IDs")
+    if any(bm[k].get("prompt_sha256")!=am[k].get("prompt_sha256") for k in bm):
+        raise ValueError("Incompatible actual evaluation prompts")
+    if any(bm[k]["gold_oracle"]!=am[k]["gold_oracle"] for k in bm):
+        raise ValueError("Incompatible gold oracles")
+    eligible=[k for k in bm if bm[k]["gold_oracle"]["kind"] in ("numeric","insufficient")]
+    def end_to_end(rows):
+        return sum(rows[k]["scores"].get("auto_pass") is True for k in eligible)/len(eligible) if eligible else None
     paired={}
     for metric in ("valid_json","numeric_correct","unit_correct","answerability_correct","auto_pass","citation_precision","citation_recall"):
         # Compare the identical set of samples that have the relevant metric.
@@ -37,6 +44,7 @@ def compare(base_path, adapted_path):
     return {"base_model":b["model"],"adapted_model":a["model"],"matched_examples":len(bm),
             "base_errors":b["summary"]["error_count"],"adapted_errors":a["summary"]["error_count"],
             "metrics":paired,
+            "auto_proxy_end_to_end":{"eligible":len(eligible),"base":end_to_end(bm),"adapted":end_to_end(am)},
             "warning":"Numeric/format/citation signals only. Paired metrics exclude items unscored in either run; auto_pass counts failed numeric or abstention outputs. FinanceBench answer correctness needs human/verified labels."}
 
 if __name__=="__main__":
