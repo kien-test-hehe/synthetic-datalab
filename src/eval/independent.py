@@ -19,6 +19,17 @@ from src.m4.experiments import allowed_source, load_authored
 from src.financial_units import normalize_oracle
 
 SOURCE="independent_fictional_evaluation_only"
+FROZEN_V1={
+    "dev":{"rows":500,"cases":68,"sha256":"a26de9d4903b87d8821396b85163a5b68f1c4d87fcfb7ef52015283317677499"},
+    "test":{"rows":1000,"cases":134,"sha256":"40ce1a95a9505c07276a41e21ba5baf1f7fa29db85ec584659551cef60c34de3"},
+}
+
+def validate_frozen_v1(counts):
+    for split,expected in FROZEN_V1.items():
+        for field,value in expected.items():
+            if counts[split][field]!=value:
+                raise ValueError(f"Independent v1 changed: {split}.{field}; version the benchmark explicitly")
+
 
 def evidence_hash(evidence):
     return hashlib.sha256(json.dumps(sorted(normalized_question(e["text"]) for e in evidence),ensure_ascii=False).encode()).hexdigest()
@@ -91,7 +102,10 @@ def build(cases_path="evaluation/independent/cases.jsonl",authored_root="sft/aut
         path.write_text("".join(json.dumps(r,ensure_ascii=False,sort_keys=True)+"\n" for r in selected),encoding="utf-8")
         counts[split]={"rows":len(selected),"cases":len({r["case_id"] for r in selected}),"oracle_kinds":dict(Counter(r["oracle"]["kind"] for r in selected)),"sha256":hashlib.sha256(path.read_bytes()).hexdigest()}
     assert all(counts[s]["rows"]>0 for s in counts)
-    report={"source":SOURCE,"splits":counts,"authored_train_sha256":manifest["splits"]["train"]["sha256"],
+    frozen=cases_path.name=="cases.jsonl"
+    if frozen:
+        validate_frozen_v1(counts)
+    report={"benchmark_version":"independent-v1" if frozen else "unfrozen-custom","source":SOURCE,"splits":counts,"authored_train_sha256":manifest["splits"]["train"]["sha256"],
             "casebook_sha256":hashlib.sha256(cases_path.read_bytes()).hexdigest(),
             "casebook_files":{str(path):hashlib.sha256(path.read_bytes()).hexdigest() for path in paths},
             "target":{"dev":500,"test":1000},
@@ -99,7 +113,7 @@ def build(cases_path="evaluation/independent/cases.jsonl",authored_root="sft/aut
             "categories":dict(Counter(r["category"] for r in rows)),
             "languages":dict(Counter(r["language_pair"] for r in rows)),
             "adversarial_tags":dict(Counter(t for r in rows for t in r["adversarial_tags"])),
-            "exact_leakage_checks":"pass","limitations":["In-progress fictional benchmark, not representative of all real-world finance questions.","No exact question, case or evidence overlap with authored corpus; conceptual skill overlap possible.","No expert adjudication or model evaluation performed."]}
+            "exact_leakage_checks":"pass","limitations":["Fictional benchmark, not representative of all real-world finance questions.","No exact question, case or evidence overlap with authored corpus; conceptual skill overlap possible.","No expert adjudication or model evaluation performed."]}
     (out/"manifest.json").write_text(json.dumps(report,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
     return report
 
