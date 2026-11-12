@@ -60,3 +60,25 @@ class AuditRegressionTests(unittest.TestCase):
         self.assertEqual(out["question_language_candidate"],"en_candidate")
         self.assertEqual(out["answer_language_candidate"],"numeric_or_unit")
         self.assertEqual(screen_language("Tính doanh thu cuối kỳ?"),"vi_candidate")
+
+    def test_unit_registry_scale_and_context(self):
+        from src.financial_units import (RAW_AUTHORED_UNITS, canonical_unit,
+            normalize_oracle, numeric_matches)
+        self.assertEqual(len(RAW_AUTHORED_UNITS),144)
+        self.assertEqual(canonical_unit("litres"),"liters")
+        self.assertEqual(canonical_unit("tonnes_co2e"),"tco2e")
+        self.assertNotEqual(canonical_unit("percent"),canonical_unit("pp"))
+        self.assertNotEqual(canonical_unit("million_usd"),canonical_unit("usd"))
+        self.assertNotEqual(canonical_unit("billion_vnd"),canonical_unit("million_vnd"))
+        self.assertNotEqual(canonical_unit("usd_per_room_night","A015-17-a"),
+                            canonical_unit("usd_per_room_night","A021-15-c"))
+        o=normalize_oracle({"kind":"numeric","value":95,"unit":"usd_per_room_night"},"A015-17-a")
+        self.assertEqual(o["unit"],"usd_per_available_room_night")
+        self.assertEqual(o["original_unit"],"usd_per_room_night")
+        self.assertEqual(o["value"],95)
+        self.assertEqual(normalize_oracle(o,"A015-17-a"),o)
+        self.assertFalse(numeric_matches(100.001,{"value":100,"unit":"claims"}))
+        self.assertTrue(numeric_matches(100,{"value":100,"unit":"claims"}))
+        self.assertFalse(numeric_matches(0,{"value":0.01,"unit":"million_usd"}))
+        self.assertFalse(numeric_matches(float("inf"),{"value":1,"unit":"times"}))
+        self.assertFalse(numeric_matches(True,{"value":1,"unit":"times"}))

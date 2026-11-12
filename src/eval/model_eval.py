@@ -18,6 +18,7 @@ from urllib.parse import urlsplit
 
 from src.eval.financebench import read_jsonl, retrieve
 from src.m1_oracles import m1_oracle
+from src.financial_units import canonical_unit, numeric_matches, normalize_oracle
 
 SCHEMA = (
     'Return a single JSON object with keys status ("answerable" or "insufficient"), '
@@ -61,7 +62,12 @@ def parse_response(content):
     if not isinstance(obj.get("citations"),list) or not all(isinstance(x,str) for x in obj["citations"]):return None
     if "value" not in obj or "unit" not in obj:return None
     v=obj["value"];u=obj["unit"]
-    if v is not None and (type(v) not in (int,float) or not math.isfinite(v)):return None
+    if v is not None:
+        if type(v) not in (int,float):return None
+        try:
+            if not math.isfinite(v):return None
+        except OverflowError:
+            return None
     if u is not None and not isinstance(u,str):return None
     if obj["status"]=="insufficient" and (v is not None or u is not None):return None
     if (v is None)!=(u is None):return None
@@ -70,9 +76,9 @@ def parse_response(content):
     return obj
 
 def synthetic_oracle(row):
-    if row.get("oracle") is not None:return row["oracle"]
+    if row.get("oracle") is not None:return normalize_oracle(row["oracle"],row.get("id"))
     annotated=m1_oracle(row.get("id"))
-    if annotated is not None:return annotated
+    if annotated is not None:return normalize_oracle(annotated,row.get("id"))
     if row.get("answerability")=="insufficient":return {"kind":"insufficient"}
     p=row.get("program")
     if p is not None:
@@ -124,24 +130,6 @@ def financebench_examples(qa,mode="gold",chunks=None,db=None,k=10):
     finally:
         if conn:conn.close()
 
-def canonical_unit(unit):
-    if unit is None:return None
-    key=unit.strip().casefold().replace(" ","_")
-    return {"ratio":"times","x":"times","percentage":"percent","%":"percent",
-            "percentage_points":"pp","percentage_point":"pp"}.get(key,key)
-
-def numeric_matches(value, oracle):
-    if value is None:return False
-    gold=oracle["value"]
-    # Explicit per-label rounding tolerance wins. Otherwise require close
-    # agreement at the requested scale, never accept zero for nonzero gold.
-    if gold!=0 and (value==0 or (value>0)!=(gold>0)):return False
-    tolerance=oracle.get("abs_tolerance")
-    if tolerance is None:
-        tolerance=min(0.005,abs(gold)*0.005) if gold else 1e-9
-    if not math.isfinite(tolerance) or tolerance<0:raise ValueError("Invalid oracle tolerance")
-    return math.isclose(value,gold,rel_tol=0,abs_tol=tolerance+1e-12)
-
 def grade(example,parsed):
     oracle=example["oracle"];allowed=set(example["allowed_citations"])
     result={"valid_json":parsed is not None,"numeric_correct":None,"unit_correct":None,
@@ -162,7 +150,7 @@ def grade(example,parsed):
         result["answerability_correct"]=parsed["status"]=="answerable"
         v=parsed["value"]
         result["numeric_correct"]=numeric_matches(v,oracle)
-        result["unit_correct"]=canonical_unit(parsed["unit"])==canonical_unit(oracle["unit"])
+        result["unit_correct"]=canonical_unit(parsed["unit"],example.get("id"))==canonical_unit(oracle["unit"],example.get("id"))
         result["auto_pass"]=bool(result["answerability_correct"] and result["numeric_correct"] and result["unit_correct"]
             and result["citation_ids_valid"] and citations==set(example["gold_citations"] or []))
         # Correct numeric result does not certify narrative financial interpretation.
