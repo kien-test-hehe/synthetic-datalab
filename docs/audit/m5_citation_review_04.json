@@ -1,0 +1,486 @@
+{
+  "base": "807a619ba63d5aac562b46e0b7dc037f3ea5a373",
+  "scope": "Manual review against authored casebook. Numeric oracle values unchanged.",
+  "decisions": {
+    "A036-02-b": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C",
+        "D"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "source": "sft/authored/batch_036/cases/01_vi_decision_constraints.jsonl"
+    },
+    "A036-21-b": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_036/cases/03_en_vi_decision_constraints.jsonl"
+    },
+    "A036-23-b": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_036/cases/03_en_vi_decision_constraints.jsonl"
+    },
+    "A036-23-d": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "D"
+      ],
+      "after": [
+        "A",
+        "B",
+        "D"
+      ],
+      "source": "sft/authored/batch_036/cases/03_en_vi_decision_constraints.jsonl"
+    },
+    "A036-23-e": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "D"
+      ],
+      "after": [
+        "A",
+        "B",
+        "D"
+      ],
+      "source": "sft/authored/batch_036/cases/03_en_vi_decision_constraints.jsonl"
+    },
+    "A038-04-j": {
+      "status": "repaired",
+      "before": [
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "after": [
+        "B",
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "source": "sft/authored/batch_038/cases/01_vi_long_context_financial_audit.jsonl"
+    },
+    "A038-08-j": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "D",
+        "E",
+        "F"
+      ],
+      "after": [
+        "A",
+        "B",
+        "D",
+        "E",
+        "F"
+      ],
+      "source": "sft/authored/batch_038/cases/02_en_long_context_financial_audit.jsonl"
+    },
+    "A038-09-m": {
+      "status": "repaired",
+      "before": [
+        "E",
+        "H"
+      ],
+      "after": [
+        "C",
+        "E",
+        "H"
+      ],
+      "source": "sft/authored/batch_038/cases/03_en_vi_long_context_financial_audit.jsonl"
+    },
+    "A038-09-n": {
+      "status": "repaired",
+      "before": [
+        "E",
+        "G"
+      ],
+      "after": [
+        "C",
+        "E",
+        "G"
+      ],
+      "source": "sft/authored/batch_038/cases/03_en_vi_long_context_financial_audit.jsonl"
+    },
+    "A038-10-m": {
+      "status": "repaired",
+      "before": [
+        "E",
+        "G"
+      ],
+      "after": [
+        "D",
+        "E",
+        "G"
+      ],
+      "source": "sft/authored/batch_038/cases/03_en_vi_long_context_financial_audit.jsonl"
+    },
+    "A038-10-n": {
+      "status": "repaired",
+      "before": [
+        "E",
+        "F"
+      ],
+      "after": [
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "source": "sft/authored/batch_038/cases/03_en_vi_long_context_financial_audit.jsonl"
+    },
+    "A038-11-j": {
+      "status": "repaired",
+      "before": [
+        "C",
+        "D"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "source": "sft/authored/batch_038/cases/03_en_vi_long_context_financial_audit.jsonl"
+    },
+    "A038-12-n": {
+      "status": "repaired",
+      "before": [
+        "F",
+        "G"
+      ],
+      "after": [
+        "E",
+        "F",
+        "G"
+      ],
+      "source": "sft/authored/batch_038/cases/03_en_vi_long_context_financial_audit.jsonl"
+    },
+    "A038-13-m": {
+      "status": "repaired",
+      "before": [
+        "F",
+        "G"
+      ],
+      "after": [
+        "E",
+        "F",
+        "G"
+      ],
+      "source": "sft/authored/batch_038/cases/04_vi_en_long_context_financial_audit.jsonl"
+    },
+    "A038-15-d": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_038/cases/04_vi_en_long_context_financial_audit.jsonl"
+    },
+    "A038-15-e": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_038/cases/04_vi_en_long_context_financial_audit.jsonl"
+    },
+    "A038-15-f": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_038/cases/04_vi_en_long_context_financial_audit.jsonl"
+    },
+    "A038-15-n": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "after": [
+        "A",
+        "B",
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "source": "sft/authored/batch_038/cases/04_vi_en_long_context_financial_audit.jsonl"
+    },
+    "A039-15-c": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "G"
+      ],
+      "after": [
+        "A",
+        "B",
+        "G"
+      ],
+      "source": "sft/authored/batch_039/cases/04_vi_en_scope_source_priority.jsonl"
+    },
+    "A039-15-d": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "G"
+      ],
+      "after": [
+        "A",
+        "B",
+        "G"
+      ],
+      "source": "sft/authored/batch_039/cases/04_vi_en_scope_source_priority.jsonl"
+    },
+    "A039-15-h": {
+      "status": "repaired",
+      "before": [
+        "D"
+      ],
+      "after": [
+        "C",
+        "D"
+      ],
+      "source": "sft/authored/batch_039/cases/04_vi_en_scope_source_priority.jsonl"
+    },
+    "A039-15-i": {
+      "status": "repaired",
+      "before": [
+        "D"
+      ],
+      "after": [
+        "C",
+        "D"
+      ],
+      "source": "sft/authored/batch_039/cases/04_vi_en_scope_source_priority.jsonl"
+    },
+    "A039-15-j": {
+      "status": "repaired",
+      "before": [
+        "D"
+      ],
+      "after": [
+        "C",
+        "D"
+      ],
+      "source": "sft/authored/batch_039/cases/04_vi_en_scope_source_priority.jsonl"
+    },
+    "A040-03-j": {
+      "status": "repaired",
+      "before": [
+        "E",
+        "F"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C",
+        "E",
+        "F"
+      ],
+      "source": "sft/authored/batch_040/cases/01_vi_transaction_audit.jsonl"
+    },
+    "A040-09-j": {
+      "status": "repaired",
+      "before": [
+        "A",
+        "E"
+      ],
+      "after": [
+        "A",
+        "D",
+        "E"
+      ],
+      "source": "sft/authored/batch_040/cases/03_en_vi_transaction_audit.jsonl"
+    },
+    "A040-11-j": {
+      "status": "repaired",
+      "before": [
+        "A",
+        "B",
+        "D",
+        "E"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "source": "sft/authored/batch_040/cases/03_en_vi_transaction_audit.jsonl"
+    },
+    "A040-11-k": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "D",
+        "E"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "source": "sft/authored/batch_040/cases/03_en_vi_transaction_audit.jsonl"
+    },
+    "A040-14-h": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C",
+        "D"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "source": "sft/authored/batch_040/cases/04_vi_en_transaction_audit.jsonl"
+    },
+    "A040-14-i": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C",
+        "D"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "source": "sft/authored/batch_040/cases/04_vi_en_transaction_audit.jsonl"
+    },
+    "A040-14-j": {
+      "status": "repaired",
+      "before": [
+        "A",
+        "D",
+        "E"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "source": "sft/authored/batch_040/cases/04_vi_en_transaction_audit.jsonl"
+    },
+    "A040-14-k": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "D",
+        "E"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "source": "sft/authored/batch_040/cases/04_vi_en_transaction_audit.jsonl"
+    },
+    "A035-25-d": {
+      "status": "no_change",
+      "reason": "A/B/C/D/F cover grant, depreciation, procedures, costs and policy. G is misleading deck, not support."
+    },
+    "A036-02-a": {
+      "status": "no_change",
+      "reason": "A supplies renewal economics; C exit/transfer belongs to closure."
+    },
+    "A037-22-a": {
+      "status": "no_change",
+      "reason": "A table has cohort B enrollment, fee and waiver; B/C cash and expenses not inputs."
+    },
+    "A037-22-c": {
+      "status": "no_change",
+      "reason": "A table has all tuition and delivery-month inputs; cash and expenses irrelevant."
+    },
+    "A038-08-e": {
+      "status": "no_change",
+      "reason": "B explicitly states pre-flow NAV265, C gives subscription53. A is not needed if using disclosed NAV."
+    },
+    "A038-09-a": {
+      "status": "no_change",
+      "reason": "A supplies beds and closures; I is incorrect management presentation."
+    },
+    "A038-09-b": {
+      "status": "no_change",
+      "reason": "A and H supply occupied/available days and metric; I is wrong."
+    },
+    "A038-09-f": {
+      "status": "no_change",
+      "reason": "A/B/H supply occupied days and net revenue; F carrying PPE200 unrelated."
+    },
+    "A039-09-g": {
+      "status": "no_change",
+      "reason": "B and D supply audited consolidated net revenue and expense lines; E repeats revenue, G is presentation."
+    },
+    "A039-15-f": {
+      "status": "no_change",
+      "reason": "C has processed ore, feed grade, recovery and payability; D/E price/cost irrelevant."
+    },
+    "A039-15-g": {
+      "status": "no_change",
+      "reason": "C gives opening inventory, output inputs and sold quantity; other evidence not needed."
+    },
+    "A040-03-d": {
+      "status": "no_change",
+      "reason": "C explicitly states earned6 and cancellation terms; F only confirms cash settlement."
+    },
+    "A040-03-e": {
+      "status": "no_change",
+      "reason": "A/B/C/D establish vendor earned revenue and separate reseller; F cash not needed."
+    },
+    "A040-03-g": {
+      "status": "no_change",
+      "reason": "A/B/C/D/E establish revenue and accrual costs; F cash not needed."
+    }
+  }
+}
