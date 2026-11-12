@@ -38,9 +38,14 @@ This directory contains the expanding **authored-only** SFT corpus. Do not count
 | batch_032 | 32 | 256 | 0 | 0 | 256 |
 | batch_033 | 32 | 256 | 0 | 0 | 256 |
 | batch_034 | 32 | 256 | 0 | 0 | 256 |
-| Total | 1016 | 6820 | 14 | 14 | 6848 |
+| batch_035 | 32 | 256 | 0 | 0 | 256 |
+| batch_036 | 32 | 256 | 0 | 0 | 256 |
+| batch_037 | 32 | 256 | 0 | 0 | 256 |
+| batch_038 | 16 | 256 | 0 | 0 | 256 |
+| batch_039 | 16 | 256 | 0 | 0 | 256 |
+| Total | 1144 | 8100 | 14 | 14 | 8128 |
 
-**Target:** 10,000 training rows; **3,180 remaining**. All newly authored rows have individually composed questions, fictional evidence, assumptions and written solutions. Shared context is intentional within each case (latest batches have eight QA per case). Questions are individually written; code only serializes and validates. Some broad financial concepts recur across different scenarios; unique wording and arithmetic checks do not prove semantic novelty.
+**Target:** 10,000 training rows; **1,900 remaining**. All newly authored rows have individually composed questions, fictional evidence, assumptions and written solutions. Shared context is intentional within each case (batches 035–037 have eight QA per case; 038–039 have sixteen). Questions are individually written; code only serializes and validates. Some broad financial concepts recur across different scenarios; unique wording and arithmetic checks do not prove semantic novelty.
 
 ### New batch coverage
 
@@ -61,8 +66,11 @@ This directory contains the expanding **authored-only** SFT corpus. Do not count
 - Batches 023–030: 2,048 individually composed QA across 256 new fictional cases, 1,120 evidence blocks and 32 casebooks. Topics: multi-source audit, integrated cash-flow bridges, evidence-constrained judgment, decision analysis, tax and consolidation, financial risk, multi-table sector analysis and evidence resolution. New rows: 1,299 numeric, 409 qualitative, 340 insufficient-evidence; 512 per language direction.
 - Previous validated snapshot: 5,824 rows across 888 cases, 1,456 per language direction, 3,305 arithmetic assertions across batches 005–030, zero exact normalized-question duplicates and 437 lexical-review flags. All 23 tests passed; original dev/test checksums unchanged.
 - Batches 031–034: 1,024 individually composed training QA across 128 fictional cases, 640 evidence blocks and 16 committed casebooks. Topics: sector contracts, financing instruments, KPI reconciliations, and accounting estimates/valuation. 673 numeric, 194 qualitative, 157 insufficient-evidence; 256 per language direction.
-- Cumulative validated export: 6,848 rows across 1,016 cases; 1,712 per language direction. 3,978 arithmetic assertions across batches 005–034; zero exact normalized-question duplicates; 472 lexical-review flags. All 23 tests passed; dev/test hashes unchanged.
-- Validation and downloadable artifact: [CI run 43149462023](https://github.com/kien-test-hehe/synthetic-datalab/actions/runs/43149462023).
+- Previous validated snapshot: 6,848 rows across 1,016 cases; 1,712 per language direction. 3,978 arithmetic assertions across batches 005–034; zero exact normalized-question duplicates; 472 lexical-review flags. All 23 tests passed; dev/test hashes unchanged.
+- Batches 035–039: 1,280 individually composed training QA across 128 fictional cases, 880 evidence blocks and 20 committed casebooks. Topics: multi-document audit, constrained decisions, multi-table reconciliation, integrated financial reports, source priority and scope boundaries. 868 numeric, 257 qualitative, 155 insufficient-evidence; 320 per language direction.
+- Batch 038 includes 16 report packs with nine evidence blocks each and 16 independently written QA per pack. Batch 039 uses eight evidence blocks and 16 QA per pack, emphasizing actual versus forecast, incompatible denominators and unsupported causal inference.
+- Cumulative validated export: 8,128 rows across 1,144 cases; 2,032 per language direction. 4,846 arithmetic assertions across batches 005–039; zero exact normalized-question duplicates; 533 lexical-review flags. All 23 tests passed; dev/test hashes unchanged.
+- Validation and downloadable artifact: [CI run 43152429927](https://github.com/kien-test-hehe/synthetic-datalab/actions/runs/43152429927), [ZIP artifact](https://github.com/kien-test-hehe/synthetic-datalab/actions/runs/43152429927/artifacts/13913164839).
 - Normalized-question uniqueness, arithmetic, case boundaries and lexical screening are reported by the exporter. Lexical screening does not establish full semantic novelty.
 
 ## Build / download
@@ -72,7 +80,7 @@ python -m unittest discover -s tests -v
 python -m src.authored_export
 ```
 
-The output `sft/authored/exports/train.jsonl` contains 6,820 authored-only SFT examples. Dev/test retain the original 14 rows each; do not train on them. `manifest.json` records source counts, dataset hashes, checks and remaining target. GitHub Actions publishes `financial-sft-authored-only` as a ZIP artifact (30-day retention).
+The output `sft/authored/exports/train.jsonl` contains 8,100 authored-only SFT examples. Dev/test retain the original 14 rows each; do not train on them. `manifest.json` records source counts, dataset hashes, checks and remaining target. GitHub Actions publishes `financial-sft-authored-only` as a ZIP artifact (30-day retention).
 
 The original casebooks are committed; exported JSONL can always be rebuilt offline. The old M4 experimental arms remain frozen; the new authored-only export is a separate dataset and does not silently alter those experiments.
 
