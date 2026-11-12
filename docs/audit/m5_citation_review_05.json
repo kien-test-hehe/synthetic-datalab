@@ -1,0 +1,241 @@
+{
+  "base": "1f0c4888d4b946a9ef996953d7c7e16a30104a59",
+  "scope": "Manual review against authored casebook. No numeric oracle changes.",
+  "decisions": {
+    "A042-30-c": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C"
+      ],
+      "source": "sft/authored/batch_042/cases/04_vi_en_capital_valuation.jsonl"
+    },
+    "A042-30-e": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C"
+      ],
+      "source": "sft/authored/batch_042/cases/04_vi_en_capital_valuation.jsonl"
+    },
+    "A044-16-d": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C"
+      ],
+      "source": "sft/authored/batch_044/cases/02_en_reconciliation_control.jsonl"
+    },
+    "A045-02-c": {
+      "status": "repaired",
+      "before": [
+        "C",
+        "D"
+      ],
+      "after": [
+        "A",
+        "C",
+        "D"
+      ],
+      "source": "sft/authored/batch_045/cases/01_vi_incremental_decisions.jsonl"
+    },
+    "A045-02-d": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C",
+        "D"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "source": "sft/authored/batch_045/cases/01_vi_incremental_decisions.jsonl"
+    },
+    "A045-02-e": {
+      "status": "repaired",
+      "before": [
+        "C",
+        "D"
+      ],
+      "after": [
+        "A",
+        "C",
+        "D"
+      ],
+      "source": "sft/authored/batch_045/cases/01_vi_incremental_decisions.jsonl"
+    },
+    "A045-02-f": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C",
+        "D"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "source": "sft/authored/batch_045/cases/01_vi_incremental_decisions.jsonl"
+    },
+    "A045-10-b": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_045/cases/02_en_incremental_decisions.jsonl"
+    },
+    "A045-10-d": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_045/cases/02_en_incremental_decisions.jsonl"
+    },
+    "A045-11-c": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_045/cases/02_en_incremental_decisions.jsonl"
+    },
+    "A045-11-d": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_045/cases/02_en_incremental_decisions.jsonl"
+    },
+    "A045-25-f": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C"
+      ],
+      "source": "sft/authored/batch_045/cases/04_vi_en_incremental_decisions.jsonl"
+    },
+    "A046-15-i": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_046/cases/04_vi_en_integrated_reports.jsonl"
+    },
+    "A046-15-j": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_046/cases/04_vi_en_integrated_reports.jsonl"
+    },
+    "A047-05-e": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C"
+      ],
+      "source": "sft/authored/batch_047/cases/02_en_final_audit.jsonl"
+    },
+    "A042-01-b": {
+      "status": "no_change",
+      "reason": "B and case assumptions supply coupon and 20% tax; C options unrelated."
+    },
+    "A042-01-c": {
+      "status": "no_change",
+      "reason": "B and case assumptions supply after-tax interest and conversion shares; C options unrelated."
+    },
+    "A042-03-a": {
+      "status": "no_change",
+      "reason": "B directly supplies face amount and eligibility percentage; A capital700/RWA6000 unrelated."
+    },
+    "A043-31-b": {
+      "status": "no_change",
+      "reason": "A has feed tonnes, grades and recoveries; B price and costs unrelated."
+    },
+    "A043-31-d": {
+      "status": "no_change",
+      "reason": "A/C supply contained/recovered quantities and weighted rule; B sale price irrelevant."
+    },
+    "A046-15-b": {
+      "status": "no_change",
+      "reason": "A provides processed ore, grade, recovery and payability; D/F closure and cash irrelevant."
+    },
+    "A046-15-c": {
+      "status": "no_change",
+      "reason": "A provides opening stock and output inputs; D/F unrelated."
+    },
+    "A046-15-d": {
+      "status": "no_change",
+      "reason": "A provides opening, production inputs and sold tonnes; D/F unrelated."
+    },
+    "A046-15-e": {
+      "status": "no_change",
+      "reason": "A/C supply ore, opening mine PPE and reserves; D revision at year end does not enter current depletion."
+    },
+    "A046-15-f": {
+      "status": "no_change",
+      "reason": "A/C provide opening cost, production and depletion; D/F irrelevant to inventory cost."
+    },
+    "A046-15-g": {
+      "status": "no_change",
+      "reason": "A/C supply weighted cost pool and quantities; D/F unrelated."
+    },
+    "A046-15-h": {
+      "status": "no_change",
+      "reason": "A/C supply weighted cost pool and ending quantities; D/F unrelated."
+    }
+  }
+}
