@@ -18,6 +18,7 @@ from src.m1_validate import arithmetic
 from src.m1_oracles import m1_oracle
 from src.authored_language import case_language_metadata, REVIEWED_EN_CASES
 from src.financial_units import RAW_AUTHORED_UNITS, CANONICAL_UNITS, normalize_oracle
+from src.authored_similarity import screen_pairs
 from src.m4.authored import materialize as materialize_m4
 
 SOURCE = "original_fictional_hand_authored"
@@ -162,7 +163,9 @@ def build(root="sft/authored",out=None,m1="sft/m1/exports",m4="sft/m4"):
     for split,expected in FROZEN_HOLDOUT_SHA256.items():
         if counts[split]["sha256"]!=expected:
             raise ValueError(f"Frozen raw holdout changed: {split}")
-    report={"total_rows":len(rows),"total_cases":len(case_split),"splits":counts,
+    pair_records,pair_summary=screen_pairs(rows,near)
+    (out/"lexical_review.jsonl").write_text("".join(json.dumps(x,ensure_ascii=False,sort_keys=True)+"\n" for x in pair_records),encoding="utf-8")
+    report={"similarity_review":pair_summary,"total_rows":len(rows),"total_cases":len(case_split),"splits":counts,
             "language_pairs":dict(sorted(Counter(r["language_pair"] for r in rows).items())),
             "unit_registry":{"version":"financial_units_v1","raw_types":len(unit_before),"canonical_types":len(unit_after),
                 "raw_counts":dict(unit_before),"canonical_counts":dict(unit_after),"scale_changes":0},
