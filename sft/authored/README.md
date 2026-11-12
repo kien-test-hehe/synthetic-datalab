@@ -56,7 +56,7 @@ This directory contains the expanding **authored-only** SFT corpus. Do not count
 - Previous validated snapshot: 3,776 rows across 632 cases; 944 per language direction. Automated validation reports 2,006 arithmetic assertions across batches 005–022, zero exact normalized question duplicates, and 142 lexical-review flags requiring review. Dev/test hashes remain unchanged.
 - Batches 023–030: 2,048 individually composed QA across 256 new fictional cases, 1,120 evidence blocks and 32 casebooks. Topics: multi-source audit, integrated cash-flow bridges, evidence-constrained judgment, decision analysis, tax and consolidation, financial risk, multi-table sector analysis and evidence resolution. New rows: 1,299 numeric, 409 qualitative, 340 insufficient-evidence; 512 per language direction.
 - Cumulative validated export: 5,824 rows across 888 cases, 1,456 per language direction, 3,305 arithmetic assertions across batches 005–030, zero exact normalized-question duplicates and 437 lexical-review flags. All 23 tests passed; original dev/test checksums unchanged.
-- Validation and downloadable artifact: [CI run 43147527918](https://github.com/kien-test-hehe/synthetic-datalab/actions/runs/43147527918).
+- Validation and downloadable artifact: [CI run 43147584336](https://github.com/kien-test-hehe/synthetic-datalab/actions/runs/43147584336).
 - Normalized-question uniqueness, arithmetic, case boundaries and lexical screening are reported by the exporter. Lexical screening does not establish full semantic novelty.
 
 ## Build / download
