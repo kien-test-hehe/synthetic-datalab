@@ -17,6 +17,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from src.eval.financebench import read_jsonl, retrieve
+from src.m1_oracles import m1_oracle
 
 SCHEMA = (
     'Return a single JSON object with keys status ("answerable" or "insufficient"), '
@@ -70,6 +71,8 @@ def parse_response(content):
 
 def synthetic_oracle(row):
     if row.get("oracle") is not None:return row["oracle"]
+    annotated=m1_oracle(row.get("id"))
+    if annotated is not None:return annotated
     if row.get("answerability")=="insufficient":return {"kind":"insufficient"}
     p=row.get("program")
     if p is not None:

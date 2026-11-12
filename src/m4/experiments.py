@@ -51,8 +51,8 @@ def load_authored(root):
 def structured_row(row):
     r=deepcopy(row)
     oracle=synthetic_oracle(r)
-    # Legacy M1 with no verified single-result oracle retains the full
-    # authored answer; do not infer the final result from arithmetic checks.
+    # Multi-result questions retain all results in the full authored answer;
+    # do not force one arbitrary result into the scalar value field.
     body=r["answer"]
     body=re.sub(r"\n(?:Bằng chứng|Evidence):\s*(?:\[[^\]]+\]\s*)+$","",body).strip()
     payload={"status":"insufficient" if oracle["kind"]=="insufficient" else "answerable",
@@ -106,7 +106,7 @@ def prepare(m3="sft/m3/outputs",out="sft/m4/experiments",m1="sft/m1/exports",m4=
     conditions["robust_size_matched"]=matched
     if not ood:
         conditions["authored_only"]=authored["train"]
-        conditions["authored_verified_oracle"]=[r for r in authored["train"] if synthetic_oracle(r)["kind"]!="manual_review"]
+        conditions["authored_verified_oracle"]=[r for r in authored["train"] if synthetic_oracle(r)["kind"] in ("numeric","qualitative","insufficient")]
         conditions["authored_plus_robust"]=authored["train"]+pool
         conditions["authored_plus_gold"]=authored["train"]+gold
     def write(name,rows):

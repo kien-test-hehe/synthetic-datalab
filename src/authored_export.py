@@ -15,6 +15,7 @@ from collections import Counter
 from pathlib import Path
 
 from src.m1_validate import arithmetic
+from src.m1_oracles import m1_oracle
 from src.m4.authored import materialize as materialize_m4
 
 SOURCE = "original_fictional_hand_authored"
@@ -91,7 +92,10 @@ def build(root="sft/authored",out=None,m1="sft/m1/exports",m4="sft/m4"):
     for split in SPLITS:
         for row in read_jsonl(Path(m1)/f"{split}.jsonl"):
             assert row["split"]==split and row["source"]==SOURCE
-            rows.append(dict(row,authored_batch="m1"))
+            label=m1_oracle(row["id"])
+            assert label is not None
+            # Retain raw held-out files and hashes; annotations are applied by evaluator.
+            rows.append(dict(row,authored_batch="m1",oracle=label) if split=="train" else dict(row,authored_batch="m1"))
     m4rows,m4report=materialize_m4(m4)
     rows.extend(dict(r,authored_batch="m4") for r in m4rows)
     old_count=len(rows)

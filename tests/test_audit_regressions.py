@@ -30,3 +30,18 @@ class AuditRegressionTests(unittest.TestCase):
         self.assertEqual(result["citations"],["A"])
         self.assertEqual(result["answer"],"Worked result.")
         self.assertEqual(row["messages"][2]["content"],"old")
+
+    def test_m1_oracles_cover_all_original_rows(self):
+        from pathlib import Path
+        from src.authored_export import read_jsonl
+        from src.m1_oracles import ORACLES, m1_oracle
+        all_rows=[r for split in ("train","dev","test")
+                  for r in read_jsonl(Path("sft/m1/exports")/(split+".jsonl"))]
+        self.assertEqual(set(ORACLES),{r["id"] for r in all_rows})
+        self.assertEqual(m1_oracle("M1-IS02-01")["value"],25)
+        self.assertEqual(m1_oracle("M1-IS02-02")["value"],8)
+        self.assertEqual(m1_oracle("M1-NT32-01")["value"],60)
+        self.assertEqual(m1_oracle("M1-IS05-01")["kind"],"multi_numeric")
+        for row in all_rows:
+            self.assertEqual(m1_oracle(row["id"])["kind"]=="insufficient",
+                             row["answerability"]=="insufficient")
