@@ -1,0 +1,26 @@
+name: Independent evaluation pilot
+on:
+  pull_request:
+    paths:
+      - 'evaluation/independent/**'
+      - 'src/eval/independent.py'
+      - 'src/authored*.py'
+      - 'src/financial*.py'
+      - 'sft/authored/**'
+      - 'src/m4/**'
+      - '.github/workflows/independent-eval.yml'
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m src.authored_export
+      - run: python -m src.eval.independent
+      - uses: actions/upload-artifact@v4
+        with:
+          name: independent-evaluation-pilot
+          path: evaluation/independent/exports/

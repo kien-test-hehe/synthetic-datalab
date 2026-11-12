@@ -1,0 +1,95 @@
+"""Validate and export hand-authored, evaluation-only fictional cases.
+
+The authored training builder and SFT arms never consume this directory.
+Exact case, question, and evidence-text leakage is checked against the pinned
+10K authored snapshot and legacy dev/test; this is not semantic OOD proof.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import math
+from collections import Counter
+from pathlib import Path
+
+from src.authored_export import read_jsonl, normalized_question
+from src.m1_validate import arithmetic
+from src.m4.experiments import allowed_source, load_authored
+from src.financial_units import normalize_oracle
+
+SOURCE="independent_fictional_evaluation_only"
+
+def evidence_hash(evidence):
+    return hashlib.sha256(json.dumps(sorted(normalized_question(e["text"]) for e in evidence),ensure_ascii=False).encode()).hexdigest()
+
+def build(cases_path="evaluation/independent/cases.jsonl",authored_root="sft/authored/exports",out="evaluation/independent/exports"):
+    authored,manifest=load_authored(authored_root)
+    old=[r for split in authored.values() for r in split]
+    forbidden_ids={r["id"] for r in old}
+    forbidden_cases={r["case_id"] for r in old}
+    forbidden_questions={normalized_question(r["question"]) for r in old}
+    forbidden_contexts={evidence_hash(r["evidence"]) for r in old}
+    forbidden_evidence={normalized_question(e["text"]) for r in old for e in r["evidence"]}
+    rows=[];seen_cases=set();seen_contexts=set();seen_questions=set();seen_ids=set()
+    cases=read_jsonl(cases_path)
+    for case in cases:
+        cid=case["case_id"];split=case["split"]
+        assert cid.startswith("IE-") and cid not in forbidden_cases|seen_cases
+        assert split in ("dev","test")
+        assert case["language_pair"] in ("vi-vi","en-en","vi-en","en-vi")
+        seen_cases.add(cid)
+        evidence=case["evidence"];ids={e["id"] for e in evidence}
+        assert len(ids)==len(evidence)>=2
+        context=evidence_hash(evidence)
+        assert context not in forbidden_contexts|seen_contexts
+        assert not ({normalized_question(e["text"]) for e in evidence}&forbidden_evidence)
+        seen_contexts.add(context)
+        for q in case["qas"]:
+            rid=cid+"-"+q["id"];question=normalized_question(q["question"])
+            assert rid not in forbidden_ids|seen_ids
+            assert question not in forbidden_questions|seen_questions
+            seen_ids.add(rid);seen_questions.add(question)
+            cites=q["evidence_ids"]
+            assert cites and len(cites)==len(set(cites)) and set(cites)<=ids
+            oracle=normalize_oracle(q["oracle"],rid)
+            assert oracle["kind"] in ("numeric","qualitative","insufficient")
+            if oracle["kind"]=="numeric":
+                assert q["checks"] and oracle["unit"]
+                for expr,expected in q["checks"]:
+                    assert math.isclose(arithmetic(expr),expected,rel_tol=1e-8,abs_tol=1e-8),rid
+                assert math.isclose(q["checks"][-1][1],oracle["value"],rel_tol=1e-8,abs_tol=1e-8),rid
+            else:
+                assert not q["checks"]
+            vi=case["language_pair"].endswith("-vi")
+            user=case["assumptions"]+"\n\n"+"\n\n".join("["+e["id"]+"] "+e["text"] for e in evidence)+"\n\n"+q["question"]
+            system="Chỉ trả lời từ bằng chứng giả định; giải thích và dẫn ID, không suy diễn khi thiếu dữ liệu." if vi else "Answer only from the fictional evidence. Explain, cite evidence IDs, and abstain if insufficient."
+            answer=q["answer"]+"\nEvidence: "+" ".join("["+c+"]" for c in cites)
+            row={"id":rid,"case_id":cid,"split":split,"category":case["category"],"language_pair":case["language_pair"],
+                 "source":SOURCE,"source_type":"fully_synthetic_only","variant_type":"independent_evaluation",
+                 "accounting_assumptions":case["assumptions"],"evidence":evidence,"question":q["question"],
+                 "answer":answer,"oracle":oracle,"checks":q["checks"],"evidence_ids":cites,
+                 "answerability":"insufficient" if oracle["kind"]=="insufficient" else "answerable",
+                 "messages":[{"role":"system","content":system},{"role":"user","content":user},{"role":"assistant","content":answer}]}
+            assert not allowed_source(row)
+            rows.append(row)
+    out=Path(out);out.mkdir(parents=True,exist_ok=True)
+    counts={}
+    for split in ("dev","test"):
+        selected=[r for r in rows if r["split"]==split]
+        path=out/f"{split}.jsonl"
+        path.write_text("".join(json.dumps(r,ensure_ascii=False,sort_keys=True)+"\n" for r in selected),encoding="utf-8")
+        counts[split]={"rows":len(selected),"cases":len({r["case_id"] for r in selected}),"oracle_kinds":dict(Counter(r["oracle"]["kind"] for r in selected)),"sha256":hashlib.sha256(path.read_bytes()).hexdigest()}
+    assert all(counts[s]["rows"]>0 for s in counts)
+    report={"source":SOURCE,"splits":counts,"authored_train_sha256":manifest["splits"]["train"]["sha256"],
+            "casebook_sha256":hashlib.sha256(Path(cases_path).read_bytes()).hexdigest(),
+            "exact_leakage_checks":"pass","limitations":["Small pilot, not a representative financial benchmark.","No exact question, case or evidence overlap with authored corpus; conceptual skill overlap possible.","No expert adjudication or model evaluation performed."]}
+    (out/"manifest.json").write_text(json.dumps(report,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
+    return report
+
+if __name__=="__main__":
+    p=argparse.ArgumentParser()
+    p.add_argument("--cases",default="evaluation/independent/cases.jsonl")
+    p.add_argument("--authored-root",default="sft/authored/exports")
+    p.add_argument("--out",default="evaluation/independent/exports")
+    args=p.parse_args();print(json.dumps(build(args.cases,args.authored_root,args.out),indent=2,ensure_ascii=False))
