@@ -51,4 +51,4 @@ See [M4 experimental protocol](docs/M4_EXPERIMENTS.md). M1 + M4 contain 140 trul
 
 ## Authored-only corpus (active priority)
 
-See [sft/authored/README.md](sft/authored/README.md). Two new manually composed batches contribute 180 training rows, for a combined **320 authored QA / 292 train / 14 dev / 14 test**. Run `python -m src.authored_export` to obtain the strictly authored-only export. Do not count M2/M3 generated rows toward the 10,000 authored training-row goal. No model training has yet been run.
+See [sft/authored/README.md](sft/authored/README.md). Four manually composed batches contribute 308 training rows, for a combined **448 authored QA / 420 train / 14 dev / 14 test**. Run `python -m src.authored_export` to obtain the strictly authored-only export. Do not count M2/M3 generated rows toward the 10,000 authored training-row goal. No model training has yet been run.
