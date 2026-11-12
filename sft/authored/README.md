@@ -10,17 +10,20 @@ This directory contains the expanding **authored-only** SFT corpus. Do not count
 | M4 (sft/m4) | 20 | 32 | 4 | 4 | 40 |
 | batch_005 | 48 | 100 | 0 | 0 | 100 |
 | batch_006 | 40 | 80 | 0 | 0 | 80 |
-| Total | 148 | 292 | 14 | 14 | 320 |
+| batch_007 | 20 | 80 | 0 | 0 | 80 |
+| batch_008 | 16 | 48 | 0 | 0 | 48 |
+| Total | 184 | 420 | 14 | 14 | 448 |
 
-**Target:** 10,000 training rows; **9,708 remaining**. All newly authored rows have individually composed questions, fictional evidence, assumptions and written solutions. Shared context is intentional within each case, but questions are distinct; code only serializes and validates.
+**Target:** 10,000 training rows; **9,580 remaining**. All newly authored rows have individually composed questions, fictional evidence, assumptions and written solutions. Shared context is intentional within each case, but questions are distinct; code only serializes and validates.
 
 ### New batch coverage
 
 - Batch 005: valuation and corporate finance; banking, insurance and investment funds; acquisition, consolidation, accounting policies; multi-document and cross-language questions.
 - Batch 006: audit and going concern; liquidity and cash-flow bridges; operating performance; financial notes, tax, asset recognition; cross-company, version and scope reasoning.
-- 180 new QA, 88 cases, 302 evidence blocks. 45 new rows per language pair.
-- New rows: 114 numeric, 37 qualitative, 29 insufficient-evidence. 124 arithmetic assertions checked.
-- 320 unique normalized questions; lexical screening threshold Jaccard >= 0.60 found no pairs involving the new rows. This does not establish full semantic novelty.
+- Batch 007: 80 bespoke QA across 20 new cases, with 86 evidence blocks and 25 manually composed Markdown tables. Covers multi-statement acquisitions, banking loan stages, insurance service results, multi-currency segments, collections and billings, overhead allocation, stress forecasts, tax bridges, and correction of inconsistent financial tables.
+- Batch 008: 48 bespoke QA across 16 new cases, with 63 evidence blocks and one table. Emphasizes qualitative analysis, revenue risk, contingent recognition, commitments, related parties, accounting measurement and scope.
+- Batches 005–008: 308 newly authored training QA, 124 cases, 451 evidence blocks; 77 rows per language pair. 192 numeric, 56 qualitative, 60 insufficient-evidence. 210 arithmetic assertions supplied for verification.
+- Normalized-question uniqueness, arithmetic, case boundaries and lexical screening are reported by the exporter. Lexical screening does not establish full semantic novelty.
 
 ## Build / download
 
@@ -29,7 +32,7 @@ python -m unittest discover -s tests -v
 python -m src.authored_export
 ```
 
-The output `sft/authored/exports/train.jsonl` contains 292 authored-only SFT examples. Dev/test retain the original 14 rows each; do not train on them. `manifest.json` records source counts, dataset hashes, checks and remaining target. GitHub Actions publishes `financial-sft-authored-only` as a ZIP artifact (30-day retention).
+The output `sft/authored/exports/train.jsonl` contains 420 authored-only SFT examples. Dev/test retain the original 14 rows each; do not train on them. `manifest.json` records source counts, dataset hashes, checks and remaining target. GitHub Actions publishes `financial-sft-authored-only` as a ZIP artifact (30-day retention).
 
 The original casebooks are committed; exported JSONL can always be rebuilt offline. The old M4 experimental arms remain frozen; the new authored-only export is a separate dataset and does not silently alter those experiments.
 
