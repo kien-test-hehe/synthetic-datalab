@@ -2,9 +2,9 @@ name: Authored-only financial corpus
 on:
   push:
     branches: [feature/m4-authored-and-model-eval, main]
-    paths: ['sft/authored/**', 'src/authored_export.py', 'src/m1_oracles.py', 'src/eval/**', 'tests/**', '.github/workflows/authored_quality.yml']
+    paths: ['sft/authored/**', 'src/authored_export.py', 'src/authored_language.py', 'src/m1_oracles.py', 'src/eval/**', 'tests/**', '.github/workflows/authored_quality.yml']
   pull_request:
-    paths: ['sft/authored/**', 'src/authored_export.py', 'src/m1_oracles.py', 'src/eval/**', 'tests/**', '.github/workflows/authored_quality.yml']
+    paths: ['sft/authored/**', 'src/authored_export.py', 'src/authored_language.py', 'src/m1_oracles.py', 'src/eval/**', 'tests/**', '.github/workflows/authored_quality.yml']
   workflow_dispatch:
 jobs:
   validate:

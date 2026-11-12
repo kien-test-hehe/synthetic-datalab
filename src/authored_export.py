@@ -16,6 +16,7 @@ from pathlib import Path
 
 from src.m1_validate import arithmetic
 from src.m1_oracles import m1_oracle
+from src.authored_language import case_language_metadata, REVIEWED_EN_CASES
 from src.m4.authored import materialize as materialize_m4
 
 SOURCE = "original_fictional_hand_authored"
@@ -73,12 +74,8 @@ def materialize_batch(folder):
                     "id":c["case_id"]+"-"+q["id"],"case_id":c["case_id"],
                     "split":c["split"],"source":SOURCE,"source_type":"fully_synthetic_only",
                     "authored_batch":folder.name,"sector":c["sector"],
-                    "scenario_family":c["scenario_family"],"language_pair":c["language_pair"],
-                    "declared_language_pair":c.get("declared_language_pair",c["language_pair"]),
-                    "evidence_language":c.get("evidence_language","unreviewed"),
-                    "question_language":q.get("question_language","unreviewed"),
-                    "answer_language":q.get("answer_language","unreviewed"),
-                    "language_review":c.get("language_review","unreviewed"),
+                    "scenario_family":c["scenario_family"],
+                    **case_language_metadata(c,q),
                     "accounting_assumptions":c["assumptions"],"question":q["question"],
                     "answer":answer,"evidence":c["evidence"],"evidence_ids":q["evidence_ids"],
                     "oracle":oracle,"answerability":"insufficient" if oracle["kind"]=="insufficient" else "answerable",
@@ -111,6 +108,8 @@ def build(root="sft/authored",out=None,m1="sft/m1/exports",m4="sft/m4"):
         batches[folder.name]=stats
         rows.extend(new)
     assert len(rows)==len({r["id"] for r in rows})
+    reviewed_cases={r["case_id"] for r in rows if r.get("language_review")=="manual_evidence_review_only"}
+    assert reviewed_cases==REVIEWED_EN_CASES, "Missing reviewed language cases"
     question_ids = {}
     for row in rows:
         question_ids.setdefault(normalized_question(row["question"]), []).append(row["id"])
@@ -152,7 +151,12 @@ def build(root="sft/authored",out=None,m1="sft/m1/exports",m4="sft/m4"):
     report={"total_rows":len(rows),"total_cases":len(case_split),"splits":counts,
             "language_pairs":dict(sorted(Counter(r["language_pair"] for r in rows).items())),
             "language_review_counts":dict(Counter(r.get("language_review","unreviewed") for r in rows)),
-            "language_pair_note":"Pairs are declared or manually corrected; unreviewed content is not independently classified.",
+            "reviewed_english_evidence_cases":len(reviewed_cases),
+            "declared_language_pairs":dict(Counter(r.get("declared_language_pair",r["language_pair"]) for r in rows)),
+            "evidence_languages":dict(Counter(r.get("evidence_language","unreviewed") for r in rows)),
+            "question_language_candidates":dict(Counter(r.get("question_language_candidate","unreviewed") for r in rows)),
+            "answer_language_candidates":dict(Counter(r.get("answer_language_candidate","unreviewed") for r in rows)),
+            "language_pair_note":"Source evidence language corrected for reviewed cases; output suffix remains intended language, not independently verified actual language. Candidates are heuristic only.",
             "new_batches":batches,"new_rows":len(rows)-old_count,
             "new_arithmetic_checks":sum(b["arithmetic_checks"] for b in batches.values()),
             "exact_duplicate_questions":0,"new_lexical_review_flags":near,

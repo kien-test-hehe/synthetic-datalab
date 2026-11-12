@@ -45,3 +45,18 @@ class AuditRegressionTests(unittest.TestCase):
         for row in all_rows:
             self.assertEqual(m1_oracle(row["id"])["kind"]=="insufficient",
                              row["answerability"]=="insufficient")
+
+    def test_source_language_review_preserves_intent(self):
+        from src.authored_language import case_language_metadata, REVIEWED_EN_CASES, screen_language
+        self.assertEqual(len(REVIEWED_EN_CASES),131)
+        c={"case_id":"A027-26","language_pair":"vi-en",
+           "evidence":[{"text":"Bank parent owns 80%."}]}
+        q={"question":"Find ownership remaining.","answer":"20%."}
+        out=case_language_metadata(c,q)
+        self.assertEqual(out["declared_language_pair"],"vi-en")
+        self.assertEqual(out["language_pair"],"en-en")
+        self.assertEqual(out["evidence_language"],"en")
+        self.assertEqual(out["question_language"],"unreviewed")
+        self.assertEqual(out["question_language_candidate"],"en_candidate")
+        self.assertEqual(out["answer_language_candidate"],"numeric_or_unit")
+        self.assertEqual(screen_language("Tính doanh thu cuối kỳ?"),"vi_candidate")
