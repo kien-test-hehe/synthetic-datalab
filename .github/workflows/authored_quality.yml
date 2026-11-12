@@ -1,0 +1,23 @@
+name: Authored-only financial corpus
+on:
+  push:
+    branches: [feature/m4-authored-and-model-eval, main]
+    paths: ['sft/authored/**', 'src/authored_export.py', 'tests/test_authored_export.py', '.github/workflows/authored_quality.yml']
+  pull_request:
+    paths: ['sft/authored/**', 'src/authored_export.py', 'tests/test_authored_export.py', '.github/workflows/authored_quality.yml']
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m unittest discover -s tests -v
+      - run: python -m src.authored_export
+      - uses: actions/upload-artifact@v4
+        with:
+          name: financial-sft-authored-only
+          path: sft/authored/exports/
+          retention-days: 30
