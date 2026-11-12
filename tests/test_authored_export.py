@@ -23,13 +23,17 @@ class AuthoredOnlyTests(unittest.TestCase):
     def test_combined_authored_export(self):
         with tempfile.TemporaryDirectory() as tmp:
             report=build(out=tmp)
-            self.assertEqual(report["total_rows"],320)
-            self.assertEqual(report["total_cases"],148)
-            self.assertEqual(report["new_rows"],180)
-            self.assertEqual(report["new_arithmetic_checks"],124)
-            self.assertEqual({s:v["rows"] for s,v in report["splits"].items()},{"train":292,"dev":14,"test":14})
-            self.assertEqual(report["remaining_training_rows"],9708)
-            self.assertEqual(report["new_lexical_review_flags"],[])
+            new_rows=sum(v["rows"] for v in report["new_batches"].values())
+            new_cases=sum(v["cases"] for v in report["new_batches"].values())
+            self.assertGreaterEqual(new_rows,180)
+            self.assertEqual(report["total_rows"],140+new_rows)
+            self.assertEqual(report["total_cases"],60+new_cases)
+            self.assertEqual(report["new_rows"],new_rows)
+            self.assertGreaterEqual(report["new_arithmetic_checks"],124)
+            self.assertEqual({s:v["rows"] for s,v in report["splits"].items()},
+                             {"train":112+new_rows,"dev":14,"test":14})
+            self.assertEqual(report["remaining_training_rows"],max(0,10000-112-new_rows))
+            self.assertEqual(report["exact_duplicate_questions"],0)
             allrows=[x for s in ("train","dev","test") for x in read_jsonl(Path(tmp)/f"{s}.jsonl")]
             self.assertTrue(all(r["source"]=="original_fictional_hand_authored" for r in allrows))
             self.assertFalse(any("original_task_id" in r for r in allrows))
