@@ -43,9 +43,17 @@ This directory contains the expanding **authored-only** SFT corpus. Do not count
 | batch_037 | 32 | 256 | 0 | 0 | 256 |
 | batch_038 | 16 | 256 | 0 | 0 | 256 |
 | batch_039 | 16 | 256 | 0 | 0 | 256 |
-| Total | 1144 | 8100 | 14 | 14 | 8128 |
+| batch_040 | 16 | 256 | 0 | 0 | 256 |
+| batch_041 | 32 | 256 | 0 | 0 | 256 |
+| batch_042 | 32 | 256 | 0 | 0 | 256 |
+| batch_043 | 32 | 256 | 0 | 0 | 256 |
+| batch_044 | 32 | 256 | 0 | 0 | 256 |
+| batch_045 | 32 | 256 | 0 | 0 | 256 |
+| batch_046 | 16 | 256 | 0 | 0 | 256 |
+| batch_047 | 12 | 108 | 0 | 0 | 108 |
+| Total | 1348 | 10000 | 14 | 14 | 10028 |
 
-**Target:** 10,000 training rows; **1,900 remaining**. All newly authored rows have individually composed questions, fictional evidence, assumptions and written solutions. Shared context is intentional within each case (batches 035–037 have eight QA per case; 038–039 have sixteen). Questions are individually written; code only serializes and validates. Some broad financial concepts recur across different scenarios; unique wording and arithmetic checks do not prove semantic novelty.
+**Target:** 10,000 training rows; **complete (0 remaining)**. All newly authored rows have individually composed questions, fictional evidence, assumptions and written solutions. Shared context is intentional within each case (batches 035–037 and 041–045 have eight QA per case; 038–040 and 046 have sixteen; 047 has nine). Questions are individually written; code only serializes and validates. Some broad financial concepts recur across different scenarios; unique wording and arithmetic checks do not prove semantic novelty.
 
 ### New batch coverage
 
@@ -69,8 +77,10 @@ This directory contains the expanding **authored-only** SFT corpus. Do not count
 - Previous validated snapshot: 6,848 rows across 1,016 cases; 1,712 per language direction. 3,978 arithmetic assertions across batches 005–034; zero exact normalized-question duplicates; 472 lexical-review flags. All 23 tests passed; dev/test hashes unchanged.
 - Batches 035–039: 1,280 individually composed training QA across 128 fictional cases, 880 evidence blocks and 20 committed casebooks. Topics: multi-document audit, constrained decisions, multi-table reconciliation, integrated financial reports, source priority and scope boundaries. 868 numeric, 257 qualitative, 155 insufficient-evidence; 320 per language direction.
 - Batch 038 includes 16 report packs with nine evidence blocks each and 16 independently written QA per pack. Batch 039 uses eight evidence blocks and 16 QA per pack, emphasizing actual versus forecast, incompatible denominators and unsupported causal inference.
-- Cumulative validated export: 8,128 rows across 1,144 cases; 2,032 per language direction. 4,846 arithmetic assertions across batches 005–039; zero exact normalized-question duplicates; 533 lexical-review flags. All 23 tests passed; dev/test hashes unchanged.
-- Validation and downloadable artifact: [CI run 43152429927](https://github.com/kien-test-hehe/synthetic-datalab/actions/runs/43152429927), [ZIP artifact](https://github.com/kien-test-hehe/synthetic-datalab/actions/runs/43152429927/artifacts/13913164839).
+- Previous validated snapshot: 8,128 rows across 1,144 cases; 2,032 per language direction. 4,846 arithmetic assertions across batches 005–039; zero exact normalized-question duplicates; 533 lexical-review flags. All 23 tests passed; dev/test hashes unchanged.
+- Batches 040–047 add 1,900 individually composed QA across 204 fictional cases and 32 casebooks. They cover transaction accounting, policy boundaries, capital structure, valuation, disclosure, reconciliations, incremental decisions and integrated financial reports. New rows: 1,403 numeric, 272 qualitative, 225 insufficient-evidence; 475 per language direction.
+- **Final validated 10K export:** 10,028 rows across 1,348 cases (10,000 train, 14 dev, 14 test); 2,507 rows per language direction. 6,249 arithmetic assertions across batches 005–047; zero exact normalized-question duplicates; 770 lexical-review flags. All 23 tests passed; dev/test hashes unchanged. Train SHA-256: `04d4088e2aaeace914c530b16d3b022f40fb6c0ba408c4f1a63b7c50fd2710fc`.
+- Validation and downloadable artifact: [CI run 43157601163](https://github.com/kien-test-hehe/synthetic-datalab/actions/runs/43157601163), [ZIP artifact](https://github.com/kien-test-hehe/synthetic-datalab/actions/runs/43157601163/artifacts/13917030769).
 - Normalized-question uniqueness, arithmetic, case boundaries and lexical screening are reported by the exporter. Lexical screening does not establish full semantic novelty.
 
 ## Build / download
@@ -80,7 +90,7 @@ python -m unittest discover -s tests -v
 python -m src.authored_export
 ```
 
-The output `sft/authored/exports/train.jsonl` contains 8,100 authored-only SFT examples. Dev/test retain the original 14 rows each; do not train on them. `manifest.json` records source counts, dataset hashes, checks and remaining target. GitHub Actions publishes `financial-sft-authored-only` as a ZIP artifact (30-day retention).
+The output `sft/authored/exports/train.jsonl` contains 10,000 authored-only SFT examples. Dev/test retain the original 14 rows each; do not train on them. `manifest.json` records source counts, dataset hashes, checks and remaining target. GitHub Actions publishes `financial-sft-authored-only` as a ZIP artifact (30-day retention).
 
 The original casebooks are committed; exported JSONL can always be rebuilt offline. The old M4 experimental arms remain frozen; the new authored-only export is a separate dataset and does not silently alter those experiments.
 
@@ -94,4 +104,4 @@ The original casebooks are committed; exported JSONL can always be rebuilt offli
 
 ## Limitations
 
-Not 10,000 rows yet. These are synthetic, simplified educational examples, not expert-reviewed accounting statements or complete IFRS/VAS implementations. Automated arithmetic, evidence ID and lexical checks are not proof of financial correctness, semantic diversity or learning gain. The current authored holdout is small, and later training cases may overlap broad financial concepts; do not describe it as a strict unseen-topic test. Long-document and visual reasoning are still underrepresented. No actual SFT or model accuracy improvement has been measured.
+The 10,000 training-row target is complete; independent expert review and broader holdout evaluation remain necessary. These are synthetic, simplified educational examples, not expert-reviewed accounting statements or complete IFRS/VAS implementations. Automated arithmetic, evidence ID and lexical checks are not proof of financial correctness, semantic diversity or learning gain. The current authored holdout is small, and later training cases may overlap broad financial concepts; do not describe it as a strict unseen-topic test. Long-document and visual reasoning are still underrepresented. No actual SFT or model accuracy improvement has been measured.
