@@ -202,14 +202,19 @@ def retrieve(conn, query, k=10, doc_id=None):
             for x in conn.execute(sql,params)]
 
 
+def gold_pages(item):
+    """Official FinanceBench indices are zero-based; stored PDF pages are one-based."""
+    return {(e.get("doc_name") or item["doc_name"], int(e["evidence_page_num"]) + 1)
+            for e in item.get("evidence", []) if e.get("evidence_page_num") is not None}
+
+
 def eval_retrieval(qa_path,db_path,k=10,oracle_doc=False,include_company=False):
     qas=read_jsonl(qa_path)
     stats=Counter();samples=[];conn=sqlite3.connect(db_path)
     try:
         for item in qas:
             evidence=item.get("evidence") or []
-            gold={(x.get("doc_name",item["doc_name"]),int(x["evidence_page_num"]))
-                  for x in evidence if x.get("evidence_page_num") is not None}
+            gold=gold_pages(item)
             if not gold:continue
             query=(item.get("company","")+" "+item["question"] if include_company
                     else item["question"])
@@ -237,7 +242,7 @@ def eval_retrieval(qa_path,db_path,k=10,oracle_doc=False,include_company=False):
         "doc_recall_at_k":stats["doc_hit"]/n,
         "page_recall_at_k":stats["page_hit"]/n,
         "all_gold_pages_at_k":stats["all_gold_pages"]/n,
-        "warning":"Published evidence page numbers may require alignment with physical PDF page indexing",
+        "page_numbering":"one_based_physical_pdf; official zero-based gold converted",
         "per_question":samples,
     }
 

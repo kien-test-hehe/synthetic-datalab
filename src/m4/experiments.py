@@ -13,7 +13,9 @@ import json
 import random
 from collections import Counter
 from pathlib import Path
-from src.m4.authored import materialize
+from src.authored_export import SOURCE as AUTHORED_SOURCE
+from src.eval.model_eval import SCHEMA, synthetic_oracle
+from copy import deepcopy
 from src.m3.ood_split import DEFAULT_HOLDOUT
 
 def read_rows(path):
@@ -26,13 +28,53 @@ def allowed_source(row):
     return row.get("source") in ("original_fictional_hand_authored",
         "controlled_programmatic_instantiation","controlled_robustness_augmentation")
 
-def prepare(m3="sft/m3/outputs",out="sft/m4/experiments",m1="sft/m1/exports",m4="sft/m4",ood=False):
+def load_authored(root):
+    root=Path(root)
+    manifest=json.loads((root/"manifest.json").read_text(encoding="utf-8"))
+    rows={}
+    for split,n in (("train",10000),("dev",14),("test",14)):
+        path=root/f"{split}.jsonl"
+        meta=manifest["splits"][split]
+        if hashlib.sha256(path.read_bytes()).hexdigest()!=meta["sha256"]:
+            raise ValueError(f"Authored export checksum mismatch: {split}")
+        rows[split]=read_rows(path)
+        if len(rows[split])!=n or meta["rows"]!=n:
+            raise ValueError(f"Expected {n} authored {split} rows")
+        if any(r["source"]!=AUTHORED_SOURCE or r["split"]!=split for r in rows[split]):
+            raise ValueError(f"Invalid authored provenance: {split}")
+    all_rows=[r for group in rows.values() for r in group]
+    if len({r["id"] for r in all_rows})!=len(all_rows):
+        raise ValueError("Duplicate authored IDs")
+    return rows,manifest
+
+def structured_row(row):
+    r=deepcopy(row)
+    oracle=synthetic_oracle(r)
+    # Legacy M1 with no verified single-result oracle retains the full
+    # authored answer; do not infer the final result from arithmetic checks.
+    body=r["answer"]
+    for marker in ("\nBằng chứng: ","\nEvidence: "):
+        if marker in body:body=body.rsplit(marker,1)[0]
+    payload={"status":"insufficient" if oracle["kind"]=="insufficient" else "answerable",
+             "answer":body,"value":oracle["value"] if oracle["kind"]=="numeric" else None,
+             "unit":oracle["unit"] if oracle["kind"]=="numeric" else None,
+             "citations":r["evidence_ids"]}
+    r["oracle"]=oracle
+    r["messages"][0]["content"]+="\n"+SCHEMA
+    r["messages"][2]["content"]=json.dumps(payload,ensure_ascii=False,allow_nan=False)
+    r["output_contract"]="financial_json_v1"
+    return r
+
+def prepare(m3="sft/m3/outputs",out="sft/m4/experiments",m1="sft/m1/exports",m4="sft/m4",ood=False,authored_root="sft/authored/exports"):
     m3=Path(m3);out=Path(out);out.mkdir(parents=True,exist_ok=True)
     source={s:read_rows(m3/f"m3_{s}.jsonl") for s in ("train","dev","test")}
-    m4rows,m4report=materialize(m4)
-    authored={s:read_rows(Path(m1)/f"{s}.jsonl")+[r for r in m4rows if r["split"]==s]
-              for s in ("train","dev","test")}
-    # M1's materialized rows predate the source_type field, but retain source provenance.
+    authored,m4report=({s:[] for s in source},None) if ood else load_authored(authored_root)
+    # Include foreign evidence owners in split checks, not only target worlds.
+    def owners(rows):
+        return {world(r) for r in rows}|{e["owner_world_id"] for r in rows for e in r["evidence"] if e.get("owner_world_id")}
+    owner_sets={s:owners(source[s]+authored[s]) for s in source}
+    if any(owner_sets[a]&owner_sets[b] for a,b in (("train","dev"),("train","test"),("dev","test"))):
+        raise ValueError("Evidence owner leakage across splits")
     world_sets={s:{world(r) for r in source[s]+authored[s]} for s in source}
     assert all(world_sets[s] and "" not in world_sets[s] for s in source)
     assert not (world_sets["train"]&world_sets["dev"] or world_sets["train"]&world_sets["test"] or world_sets["dev"]&world_sets["test"])
@@ -75,7 +117,7 @@ def prepare(m3="sft/m3/outputs",out="sft/m4/experiments",m1="sft/m1/exports",m4=
             ids.add(row["id"])
             assert [x["role"] for x in row["messages"]]==["system","user","assistant"]
         with path.open("w",encoding="utf-8") as f:
-            for r in rows:f.write(json.dumps(r,ensure_ascii=False,sort_keys=True)+"\n")
+            for r in rows:f.write(json.dumps(structured_row(r),ensure_ascii=False,sort_keys=True)+"\n")
         return {"rows":len(rows),"worlds":len({world(r) for r in rows}),
                 "sha256":hashlib.sha256(path.read_bytes()).hexdigest(),
                 "source_counts":dict(Counter(r["source"] for r in rows))}
@@ -91,7 +133,7 @@ def prepare(m3="sft/m3/outputs",out="sft/m4/experiments",m1="sft/m1/exports",m4=
         summaries["authored_test"]=write("authored_test",authored["test"])
     report={"mode":"program_ood" if ood else "world_holdout",
             "holdout_task_types":sorted(holdout) if ood else [],
-            "files":summaries,"authored_m4":m4report,
+            "files":summaries,"authored_export":m4report,"output_contract":"financial_json_v1",
             "notes":["Use the SAME common_dev/common_test within a mode.",
                      "The gold-only arm is derived from M3, not the old independently split M2 export.",
                      "Train with assistant/completion-only loss; inspect tokenizer length and reject truncated examples.",
@@ -103,5 +145,5 @@ def prepare(m3="sft/m3/outputs",out="sft/m4/experiments",m1="sft/m1/exports",m4=
 
 if __name__=="__main__":
     p=argparse.ArgumentParser();p.add_argument("--m3",default="sft/m3/outputs");p.add_argument("--out",default="sft/m4/experiments")
-    p.add_argument("--m1",default="sft/m1/exports");p.add_argument("--m4",default="sft/m4");p.add_argument("--ood",action="store_true")
-    a=p.parse_args();print(json.dumps(prepare(a.m3,a.out,a.m1,a.m4,a.ood),indent=2,ensure_ascii=False))
+    p.add_argument("--m1",default="sft/m1/exports");p.add_argument("--m4",default="sft/m4");p.add_argument("--authored-root",default="sft/authored/exports");p.add_argument("--ood",action="store_true")
+    a=p.parse_args();print(json.dumps(prepare(a.m3,a.out,a.m1,a.m4,a.ood,a.authored_root),indent=2,ensure_ascii=False))

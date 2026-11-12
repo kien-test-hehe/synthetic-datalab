@@ -2,9 +2,9 @@ name: M4 authored cases and experiment validation
 on:
   push:
     branches: [feature/m4-authored-and-model-eval]
-    paths: ['sft/m4/**', 'src/m4/**', 'src/eval/**', 'tests/test_m4.py', '.github/workflows/m4_quality.yml']
+    paths: ['sft/m4/**', 'src/m4/**', 'src/eval/**', 'src/authored_export.py', 'sft/authored/**', 'tests/**', 'tests/test_m4.py', '.github/workflows/m4_quality.yml']
   pull_request:
-    paths: ['sft/m4/**', 'src/m4/**', 'src/eval/**', 'tests/test_m4.py', '.github/workflows/m4_quality.yml']
+    paths: ['sft/m4/**', 'src/m4/**', 'src/eval/**', 'src/authored_export.py', 'sft/authored/**', 'tests/**', 'tests/test_m4.py', '.github/workflows/m4_quality.yml']
   workflow_dispatch:
 jobs:
   validate:
@@ -23,6 +23,8 @@ jobs:
         run: python -m src.m3.augment --worlds 800 --seed 42 --out sft/m3/outputs
       - name: Validate original corpus
         run: python -m src.m3.validate --worlds 800 --root sft/m3/outputs
+      - name: Build full authored 10K export
+        run: python -m src.authored_export
       - name: Prepare matched world-disjoint experiments
         run: python -m src.m4.experiments
       - name: Prepare program-disjoint experiments

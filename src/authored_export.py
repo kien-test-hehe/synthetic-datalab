@@ -131,6 +131,7 @@ def build(root="sft/authored",out=None,m1="sft/m1/exports",m4="sft/m4"):
         path.write_text("".join(json.dumps(r,ensure_ascii=False,sort_keys=True)+"\n" for r in selected),encoding="utf-8")
         counts[split]={"rows":len(selected),"cases":len({r["case_id"] for r in selected}),
                        "sha256":hashlib.sha256(path.read_bytes()).hexdigest()}
+    assert {s:v["rows"] for s,v in counts.items()}=={"train":10000,"dev":14,"test":14}, "Frozen authored snapshot counts changed"
     report={"total_rows":len(rows),"total_cases":len(case_split),"splits":counts,
             "language_pairs":dict(sorted(Counter(r["language_pair"] for r in rows).items())),
             "new_batches":batches,"new_rows":len(rows)-old_count,

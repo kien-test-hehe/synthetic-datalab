@@ -24,7 +24,7 @@ SCHEMA = (
     'unit (string or null), citations (array of exact evidence IDs). '
     'For a numeric question put only the requested numerical result in value, not an intermediate number. '
     'Use the requested scale and sign. Allowed standard units where applicable: percent, pp, days, times, '
-    'million_usd, billion_vnd, million_shares, usd_per_share. Use null for value/unit if not numerical. '
+    'million_usd, billion_vnd, million_shares, usd_per_share. Other requested units are allowed. Use null for value/unit if not numerical or if multiple distinct results are requested; put all results in answer. '
     'Do not make claims unsupported by the supplied evidence.'
 )
 
@@ -63,7 +63,9 @@ def parse_response(content):
     if v is not None and (type(v) not in (int,float) or not math.isfinite(v)):return None
     if u is not None and not isinstance(u,str):return None
     if obj["status"]=="insufficient" and (v is not None or u is not None):return None
-    if v is not None and not u:return None
+    if (v is None)!=(u is None):return None
+    if u is not None and not u.strip():return None
+    if len(set(obj["citations"]))!=len(obj["citations"]):return None
     return obj
 
 def synthetic_oracle(row):
@@ -73,7 +75,7 @@ def synthetic_oracle(row):
     if p is not None:
         unit={"money":"million_usd"}.get(p["unit"],p["unit"])
         return {"kind":"numeric","value":p["output_rounded"],"unit":unit}
-    return {"kind":"qualitative"}
+    return {"kind":"manual_review"} if row.get("checks") else {"kind":"qualitative"}
 
 def synthetic_example(row):
     if row.get("split") not in ("dev","test"):
@@ -82,7 +84,7 @@ def synthetic_example(row):
         raise ValueError("Unexpected synthetic provenance")
     messages=[dict(m) for m in row["messages"][:2]]
     assert [m["role"] for m in messages]==["system","user"]
-    messages[0]["content"]+="\n"+SCHEMA
+    if SCHEMA not in messages[0]["content"]:messages[0]["content"]+="\n"+SCHEMA
     return {"id":row["id"],"messages":messages,"gold_answer":row["answer"],
             "oracle":synthetic_oracle(row),"gold_citations":row["evidence_ids"],
             "allowed_citations":[x["id"] if "id" in x else x["evidence_id"] for x in row["evidence"]],
@@ -119,6 +121,24 @@ def financebench_examples(qa,mode="gold",chunks=None,db=None,k=10):
     finally:
         if conn:conn.close()
 
+def canonical_unit(unit):
+    if unit is None:return None
+    key=unit.strip().casefold().replace(" ","_")
+    return {"ratio":"times","x":"times","percentage":"percent","%":"percent",
+            "percentage_points":"pp","percentage_point":"pp"}.get(key,key)
+
+def numeric_matches(value, oracle):
+    if value is None:return False
+    gold=oracle["value"]
+    # Explicit per-label rounding tolerance wins. Otherwise require close
+    # agreement at the requested scale, never accept zero for nonzero gold.
+    if gold!=0 and (value==0 or (value>0)!=(gold>0)):return False
+    tolerance=oracle.get("abs_tolerance")
+    if tolerance is None:
+        tolerance=min(0.005,abs(gold)*0.005) if gold else 1e-9
+    if not math.isfinite(tolerance) or tolerance<0:raise ValueError("Invalid oracle tolerance")
+    return math.isclose(value,gold,rel_tol=0,abs_tol=tolerance+1e-12)
+
 def grade(example,parsed):
     oracle=example["oracle"];allowed=set(example["allowed_citations"])
     result={"valid_json":parsed is not None,"numeric_correct":None,"unit_correct":None,
@@ -138,14 +158,14 @@ def grade(example,parsed):
     if kind=="numeric":
         result["answerability_correct"]=parsed["status"]=="answerable"
         v=parsed["value"]
-        result["numeric_correct"]=v is not None and math.isclose(v,oracle["value"],rel_tol=0,abs_tol=.011)
-        result["unit_correct"]=parsed["unit"]==oracle["unit"]
+        result["numeric_correct"]=numeric_matches(v,oracle)
+        result["unit_correct"]=canonical_unit(parsed["unit"])==canonical_unit(oracle["unit"])
         result["auto_pass"]=bool(result["answerability_correct"] and result["numeric_correct"] and result["unit_correct"]
-            and result["citation_precision"]==1 and result["citation_recall"]==1)
+            and result["citation_ids_valid"] and citations==set(example["gold_citations"] or []))
         # Correct numeric result does not certify narrative financial interpretation.
     elif kind=="insufficient":
         result["answerability_correct"]=parsed["status"]=="insufficient"
-        result["auto_pass"]=bool(result["answerability_correct"] and result["citation_precision"]==1 and result["citation_recall"]==1)
+        result["auto_pass"]=bool(result["answerability_correct"] and result["citation_ids_valid"] and citations==set(example["gold_citations"] or []))
     elif example["gold_citations"] is not None:
         result["answerability_correct"]=parsed["status"]=="answerable"
     return result

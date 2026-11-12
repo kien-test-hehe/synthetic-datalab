@@ -6,6 +6,7 @@ from pathlib import Path
 
 from src.m4.authored import materialize,build
 from src.m4.experiments import prepare,read_rows,world
+from src.authored_export import build as build_authored
 from src.m3.augment import build as build_m3
 from src.eval.model_eval import (parse_response,grade,synthetic_example,
                                  financebench_examples,run,validate_endpoint)
@@ -33,8 +34,13 @@ class M4AuthorshipTests(unittest.TestCase):
             build(out=root/"authored")
             self.assertEqual(len(read_rows(root/"authored"/"train.jsonl")),32)
             build_m3(worlds=20,seed=42,out_dir=str(root/"m3"))
-            r=prepare(str(root/"m3"),str(root/"exp"))
-            self.assertEqual(r["files"]["authored_only"]["rows"],112)
+            build_authored(out=root/"full")
+            r=prepare(str(root/"m3"),str(root/"exp"),authored_root=root/"full")
+            self.assertEqual(r["files"]["authored_only"]["rows"],10000)
+            self.assertEqual(r["files"]["authored_plus_gold"]["rows"],10128)
+            self.assertEqual(r["files"]["authored_plus_robust"]["rows"],10288)
+            sample=read_rows(root/"exp"/"authored_only.jsonl")[-1]
+            self.assertIsNotNone(parse_response(sample["messages"][-1]["content"]))
             self.assertEqual(r["files"]["gold_only"]["rows"],128)
             self.assertEqual(r["files"]["robust_all"]["rows"],288)
             self.assertEqual(r["files"]["robust_size_matched"]["rows"],128)
