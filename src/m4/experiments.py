@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 import random
+import re
 from collections import Counter
 from pathlib import Path
 from src.authored_export import SOURCE as AUTHORED_SOURCE
@@ -53,8 +54,7 @@ def structured_row(row):
     # Legacy M1 with no verified single-result oracle retains the full
     # authored answer; do not infer the final result from arithmetic checks.
     body=r["answer"]
-    for marker in ("\nBằng chứng: ","\nEvidence: "):
-        if marker in body:body=body.rsplit(marker,1)[0]
+    body=re.sub(r"\n(?:Bằng chứng|Evidence):\s*(?:\[[^\]]+\]\s*)+$","",body).strip()
     payload={"status":"insufficient" if oracle["kind"]=="insufficient" else "answerable",
              "answer":body,"value":oracle["value"] if oracle["kind"]=="numeric" else None,
              "unit":oracle["unit"] if oracle["kind"]=="numeric" else None,
@@ -106,6 +106,7 @@ def prepare(m3="sft/m3/outputs",out="sft/m4/experiments",m1="sft/m1/exports",m4=
     conditions["robust_size_matched"]=matched
     if not ood:
         conditions["authored_only"]=authored["train"]
+        conditions["authored_verified_oracle"]=[r for r in authored["train"] if synthetic_oracle(r)["kind"]!="manual_review"]
         conditions["authored_plus_robust"]=authored["train"]+pool
         conditions["authored_plus_gold"]=authored["train"]+gold
     def write(name,rows):

@@ -50,7 +50,7 @@ class FinanceBenchLocalEvalTests(unittest.TestCase):
                 self.assertEqual(hits[0]["page"],1)
             qa=[{"financebench_id":"q1","doc_name":"REPORT_A","question":"What was fiscal revenue in 2025?",
                  "company":"Report A", "answer":"secret_gold_not_indexed",
-                 "evidence":[{"doc_name":"REPORT_A","evidence_page_num":1}]}]
+                 "evidence":[{"doc_name":"REPORT_A","evidence_page_num":0}]}]
             qpath=root/"questions.jsonl";qpath.write_text(json.dumps(qa[0])+"\n")
             metrics=eval_retrieval(qpath,db,k=2)
             self.assertEqual(metrics["evaluated_questions"],1)
@@ -61,7 +61,7 @@ class FinanceBenchLocalEvalTests(unittest.TestCase):
     def test_dense_scoring_without_model_downloads(self):
         rank=dense_rank([[1,0],[0,1],[.8,.2]],[1,0],k=2)
         self.assertEqual(rank,[0,2])
-        qa=[{"doc_name":"A","evidence":[{"evidence_page_num":3,"doc_name":"A"}]}]
+        qa=[{"doc_name":"A","evidence":[{"evidence_page_num":2,"doc_name":"A"}]}]
         got=[[{"doc_id":"A","page":3}]]
         self.assertEqual(score_retrieval(qa,got,1)["page_recall_at_k"],1)
 
