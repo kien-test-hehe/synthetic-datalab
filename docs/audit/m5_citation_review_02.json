@@ -1,0 +1,211 @@
+{
+  "base": "54a10f9a5ca1a13864f6b0252ecccab6e6b2983f",
+  "scope": "Manual review against authored casebook; no financial oracle values changed.",
+  "decisions": {
+    "A035-16-c": {
+      "status": "repaired",
+      "before": [
+        "D",
+        "E"
+      ],
+      "after": [
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "source": "sft/authored/batch_035/cases/02_en_multidoc_audit.jsonl"
+    },
+    "A035-23-e": {
+      "status": "repaired",
+      "before": [
+        "A",
+        "E"
+      ],
+      "after": [
+        "A",
+        "C",
+        "D",
+        "E"
+      ],
+      "source": "sft/authored/batch_035/cases/03_en_vi_multidoc_audit.jsonl"
+    },
+    "A038-08-d": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C"
+      ],
+      "source": "sft/authored/batch_038/cases/02_en_long_context_financial_audit.jsonl"
+    },
+    "A040-01-i": {
+      "status": "repaired",
+      "before": [
+        "E",
+        "F",
+        "H"
+      ],
+      "after": [
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "H"
+      ],
+      "source": "sft/authored/batch_040/cases/01_vi_transaction_audit.jsonl"
+    },
+    "A040-01-j": {
+      "status": "repaired",
+      "before": [
+        "E",
+        "F"
+      ],
+      "after": [
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+      ],
+      "source": "sft/authored/batch_040/cases/01_vi_transaction_audit.jsonl"
+    },
+    "A040-08-m": {
+      "status": "repaired",
+      "before": [
+        "C",
+        "D",
+        "E",
+        "F"
+      ],
+      "after": [
+        "A",
+        "C",
+        "D",
+        "E",
+        "F"
+      ],
+      "source": "sft/authored/batch_040/cases/02_en_transaction_audit.jsonl"
+    },
+    "A040-13-l": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "E",
+        "F"
+      ],
+      "after": [
+        "B",
+        "D",
+        "E",
+        "F"
+      ],
+      "source": "sft/authored/batch_040/cases/04_vi_en_transaction_audit.jsonl"
+    },
+    "A041-02-b": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_041/cases/01_vi_policy_boundaries.jsonl"
+    },
+    "A045-13-c": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_045/cases/02_en_incremental_decisions.jsonl"
+    },
+    "A045-13-d": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C"
+      ],
+      "source": "sft/authored/batch_045/cases/02_en_incremental_decisions.jsonl"
+    },
+    "A046-04-n": {
+      "status": "repaired",
+      "before": [
+        "D",
+        "F",
+        "G"
+      ],
+      "after": [
+        "B",
+        "D",
+        "F",
+        "G"
+      ],
+      "source": "sft/authored/batch_046/cases/01_vi_integrated_reports.jsonl"
+    },
+    "A046-04-o": {
+      "status": "repaired",
+      "before": [
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "after": [
+        "B",
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "source": "sft/authored/batch_046/cases/01_vi_integrated_reports.jsonl"
+    },
+    "A046-12-n": {
+      "status": "repaired",
+      "before": [
+        "C",
+        "D",
+        "E",
+        "G"
+      ],
+      "after": [
+        "A",
+        "C",
+        "D",
+        "E",
+        "G"
+      ],
+      "source": "sft/authored/batch_046/cases/03_en_vi_integrated_reports.jsonl"
+    },
+    "A023-26-a": {
+      "status": "no_change",
+      "reason": "B directly supplies signed appraisal350 and haircut20%; C is explicitly a draft allowance, not an additional operand source."
+    },
+    "A023-26-b": {
+      "status": "no_change",
+      "reason": "A and B supply EAD and correct collateral/haircut; C is a superseded calculation."
+    },
+    "A023-26-c": {
+      "status": "no_change",
+      "reason": "A and B supply EAD, PD and correct haircut; C is draft and not needed."
+    },
+    "A042-13-c": {
+      "status": "no_change",
+      "reason": "A supplies original cohort and B supplies conditional 80% retention; C repeats survival in a PV formula and is not necessary."
+    }
+  }
+}
