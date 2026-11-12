@@ -14,7 +14,7 @@ import random
 import re
 from collections import Counter
 from pathlib import Path
-from src.authored_export import SOURCE as AUTHORED_SOURCE
+from src.authored_export import SOURCE as AUTHORED_SOURCE, FROZEN_HOLDOUT_SHA256
 from src.eval.model_eval import SCHEMA, synthetic_oracle
 from copy import deepcopy
 from src.m3.ood_split import DEFAULT_HOLDOUT
@@ -36,8 +36,11 @@ def load_authored(root):
     for split,n in (("train",10000),("dev",14),("test",14)):
         path=root/f"{split}.jsonl"
         meta=manifest["splits"][split]
-        if hashlib.sha256(path.read_bytes()).hexdigest()!=meta["sha256"]:
+        digest=hashlib.sha256(path.read_bytes()).hexdigest()
+        if digest!=meta["sha256"]:
             raise ValueError(f"Authored export checksum mismatch: {split}")
+        if split in FROZEN_HOLDOUT_SHA256 and digest!=FROZEN_HOLDOUT_SHA256[split]:
+            raise ValueError(f"Frozen authored holdout mismatch: {split}")
         rows[split]=read_rows(path)
         if len(rows[split])!=n or meta["rows"]!=n:
             raise ValueError(f"Expected {n} authored {split} rows")

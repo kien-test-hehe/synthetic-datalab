@@ -20,6 +20,11 @@ from src.m4.authored import materialize as materialize_m4
 
 SOURCE = "original_fictional_hand_authored"
 SPLITS = ("train", "dev", "test")
+# Frozen raw holdout bytes from the validated M5 build (7ed2946).
+FROZEN_HOLDOUT_SHA256 = {
+    "dev": "8a20d80a1152fd08c935877911a67c112a0579dbed8dc42d49ce07037f512586",
+    "test": "9815bca95ff16df485fc9612490a8f64530918e2d98208b822974d6d482b475c",
+}
 
 def read_jsonl(path):
     return [json.loads(x) for x in Path(path).read_text(encoding="utf-8").splitlines() if x.strip()]
@@ -141,6 +146,9 @@ def build(root="sft/authored",out=None,m1="sft/m1/exports",m4="sft/m4"):
         counts[split]={"rows":len(selected),"cases":len({r["case_id"] for r in selected}),
                        "sha256":hashlib.sha256(path.read_bytes()).hexdigest()}
     assert {s:v["rows"] for s,v in counts.items()}=={"train":10000,"dev":14,"test":14}, "Frozen authored snapshot counts changed"
+    for split,expected in FROZEN_HOLDOUT_SHA256.items():
+        if counts[split]["sha256"]!=expected:
+            raise ValueError(f"Frozen raw holdout changed: {split}")
     report={"total_rows":len(rows),"total_cases":len(case_split),"splits":counts,
             "language_pairs":dict(sorted(Counter(r["language_pair"] for r in rows).items())),
             "language_review_counts":dict(Counter(r.get("language_review","unreviewed") for r in rows)),

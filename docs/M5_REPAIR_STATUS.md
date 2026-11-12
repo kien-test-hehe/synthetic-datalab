@@ -3,7 +3,7 @@
 This branch preserves 10,000 original fictional hand-authored training questions, with M3 augmentation in separate arms. The original raw authored export is retained as an archival label format. The training-ready experiment export uses financial_json_v1.
 
 ## Completed in code
-- Manifest verification (SHA-256, exact split counts and authored provenance).
+- Manifest verification (SHA-256, exact split counts and authored provenance); raw dev/test SHA-256 frozen to the validated M5 build. FinanceBench download pinned to upstream commit and expected QA Git blob checksum.
 - One-based physical PDF page conversion shared by lexical and dense retrieval.
 - JSON assistant target for all experiment arms; manually annotated all 100 M1 oracle types/results. Multi-result and qualitative questions require narrative review; frozen held-out source files unchanged.
 - Explicit numeric tolerance, sign check and limited aliases; qualitative conclusions still require review.

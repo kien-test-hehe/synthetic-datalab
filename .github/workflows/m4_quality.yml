@@ -2,9 +2,9 @@ name: M4 authored cases and experiment validation
 on:
   push:
     branches: [feature/m4-authored-and-model-eval]
-    paths: ['sft/m4/**', 'src/m4/**', 'src/eval/**', 'src/authored_export.py', 'sft/authored/**', 'tests/**', 'tests/test_m4.py', '.github/workflows/m4_quality.yml']
+    paths: ['sft/m4/**', 'src/m4/**', 'src/eval/**', 'src/authored_export.py', 'src/m1_oracles.py', 'sft/authored/**', 'tests/**', 'tests/test_m4.py', '.github/workflows/m4_quality.yml']
   pull_request:
-    paths: ['sft/m4/**', 'src/m4/**', 'src/eval/**', 'src/authored_export.py', 'sft/authored/**', 'tests/**', 'tests/test_m4.py', '.github/workflows/m4_quality.yml']
+    paths: ['sft/m4/**', 'src/m4/**', 'src/eval/**', 'src/authored_export.py', 'src/m1_oracles.py', 'sft/authored/**', 'tests/**', 'tests/test_m4.py', '.github/workflows/m4_quality.yml']
   workflow_dispatch:
 jobs:
   validate:

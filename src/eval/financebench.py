@@ -17,8 +17,10 @@ import urllib.request
 from collections import Counter
 from pathlib import Path
 
-QA_URL = "https://raw.githubusercontent.com/patronus-ai/financebench/main/data/financebench_open_source.jsonl"
-PDF_BASE = "https://raw.githubusercontent.com/patronus-ai/financebench/main/pdfs/"
+UPSTREAM_COMMIT = "cc39aeb4afdf33909ee1412188bf89035950c2eb"
+UPSTREAM_QA_GIT_BLOB_SHA1 = "4aef1d43a443474ba193f158f2baf70550ff528d"
+QA_URL = f"https://raw.githubusercontent.com/patronus-ai/financebench/{UPSTREAM_COMMIT}/data/financebench_open_source.jsonl"
+PDF_BASE = f"https://raw.githubusercontent.com/patronus-ai/financebench/{UPSTREAM_COMMIT}/pdfs/"
 REPO = "https://github.com/patronus-ai/financebench"
 DOC_RX = re.compile(r"^[A-Za-z0-9_.-]+$")
 
@@ -46,6 +48,8 @@ def qa_manifest(qa):
         "license_of_published_qa":"CC-BY-NC-4.0",
         "pdf_rights":"CHECK separately; published QA license does not grant blanket rights to PDFs",
         "upstream_qa":QA_URL,
+        "upstream_commit":UPSTREAM_COMMIT,
+        "upstream_qa_git_blob_sha1":UPSTREAM_QA_GIT_BLOB_SHA1,
         "upstream_repo":REPO,
     }
 
@@ -58,6 +62,9 @@ def fetch(url, timeout=90):
 
 def download_qa(path):
     b=fetch(QA_URL)
+    blob_hash=hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+    if blob_hash!=UPSTREAM_QA_GIT_BLOB_SHA1:
+        raise ValueError("Official FinanceBench QA checksum mismatch")
     path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
     path.write_bytes(b)
     qa=read_jsonl(path)
