@@ -97,7 +97,11 @@ def build(root="sft/authored",out=None,m1="sft/m1/exports",m4="sft/m4"):
         batches[folder.name]=stats
         rows.extend(new)
     assert len(rows)==len({r["id"] for r in rows})
-    assert len(rows)==len({normalized_question(r["question"]) for r in rows})
+    question_ids = {}
+    for row in rows:
+        question_ids.setdefault(normalized_question(row["question"]), []).append(row["id"])
+    duplicates = {question: ids for question, ids in question_ids.items() if len(ids) > 1}
+    assert not duplicates, f"Exact duplicate normalized questions: {duplicates}"
     assert all(r["source"]==SOURCE for r in rows)
     case_split={}
     for row in rows:
