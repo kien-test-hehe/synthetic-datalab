@@ -17,6 +17,9 @@ class Tests(unittest.TestCase):
         result=select_groups(rows,3,42)
         self.assertEqual(len(result),2);self.assertEqual(len({r["case_group"] for r in result}),1)
     def test_runtime(self):
-        plan={"status":"answerable","operands":{"x":5,"y":2},"expression":"x-y","unit":"usd","citations":["A"]}
+        plan={"status":"answerable","operands":{"x":{"value":5,"evidence_id":"A","label":"x"},"y":{"value":2,"evidence_id":"A","label":"y"}},"expression":"x-y","unit":"usd","citations":["A"]}
         self.assertEqual(run_plan(plan,["A"]),{"value":3.0,"unit":"usd"})
         with self.assertRaises(ValueError):run_plan(plan,["B"])
+        plan["operands"]["y"]["evidence_id"]="B"
+        with self.assertRaises(ValueError):run_plan(plan,["A"])
+        self.assertIsNone(run_plan({"status":"insufficient","operands":{},"expression":None,"unit":None,"citations":["A"]},["A"]))

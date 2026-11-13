@@ -32,13 +32,27 @@ def tokenize_row(tokenizer,row,max_length,kwargs=None):
     return {"input_ids":full,"attention_mask":[1]*len(full),"labels":[-100]*len(prefix)+full[len(prefix):]}
 
 def select_groups(rows,limit,seed):
+    from collections import Counter,defaultdict
     groups={}
     for r in rows:groups.setdefault(r["case_group"],[]).append(r)
-    keys=sorted(groups);random.Random(seed).shuffle(keys)
+    strata=defaultdict(list)
+    for key,group in groups.items():
+        tasks=Counter(r.get("task","unknown") for r in group)
+        dominant=sorted(tasks,key=lambda t:(-tasks[t],t))[0]
+        lang=group[0].get("language",{}).get("answer","unknown")
+        strata[(dominant,lang)].append(key)
+    rng=random.Random(seed)
+    for keys in strata.values():
+        keys.sort();rng.shuffle(keys)
+    order=[]
+    while any(strata.values()):
+        for key in sorted(strata):
+            if strata[key]:order.append(strata[key].pop())
     selected=[]
-    for key in keys:
+    for key in order:
         group=groups[key]
-        if limit and len(selected)+len(group)>limit:continue
+        # Prefix cutoff makes increasing budgets nested.
+        if limit and len(selected)+len(group)>limit:break
         selected.extend(group)
     require(bool(selected),"No complete case groups fit requested sample budget")
     return selected
