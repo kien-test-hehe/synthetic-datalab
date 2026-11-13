@@ -131,8 +131,11 @@ def messages(row,system,user,target,variant):
         "difficulty":row["difficulty"],"source":SOURCE,"split":"train","language":row["language"],
         "messages":[{"role":"system","content":system},{"role":"user","content":user},
                     {"role":"assistant","content":json.dumps(target,ensure_ascii=False,allow_nan=False,sort_keys=True)}]}
-def direct(row,profile):
-    return messages(row,SYSTEM[row["language"]["answer"]]+"\n"+SCHEMA,user_text(row),output(row,profile),profile)
+def direct(row,profile,final_only=False):
+    target=output(row,profile)
+    if final_only:
+        target["answer"]=row["gold"]["answer"]
+    return messages(row,SYSTEM[row["language"]["answer"]]+"\n"+SCHEMA,user_text(row),target,profile+("-final-only" if final_only else ""))
 def calculator_rows(row,profile):
     p=row["gold"].get("program")
     if not p:return []
@@ -158,6 +161,12 @@ def build(authored="sft/authored/exports",independent="evaluation/independent/ex
     require(digest(authored/"train.jsonl")==V1_SHA,"V1 snapshot mismatch")
     base_rows=read(authored/"train.jsonl");by_id={r["id"]:r for r in base_rows}
     require(len(base_rows)==len(by_id)==10000,"V1 count")
+    frozen={(str(authored),"dev"):"8a20d80a1152fd08c935877911a67c112a0579dbed8dc42d49ce07037f512586",
+        (str(authored),"test"):"9815bca95ff16df485fc9612490a8f64530918e2d98208b822974d6d482b475c",
+        (str(independent),"dev"):"a26de9d4903b87d8821396b85163a5b68f1c4d87fcfb7ef52015283317677499",
+        (str(independent),"test"):"40ce1a95a9505c07276a41e21ba5baf1f7fa29db85ec584659551cef60c34de3"}
+    for (root,split),sha in frozen.items():
+        require(digest(Path(root)/(split+".jsonl"))==sha,"Frozen evaluation hash mismatch")
     held=[r for root in (authored,independent) for split in ("dev","test") for r in read(root/(split+".jsonl"))]
     require(len(held)==1528,"Both held-out benchmarks required")
     hq={norm(r["question"]) for r in held};hc={context_key(r) for r in held}
@@ -187,6 +196,17 @@ def build(authored="sft/authored/exports",independent="evaluation/independent/ex
         "sft_reasoning":[direct(r,"reasoning") for r in reasoning],
         "sft_calculator_lite":[x for r in lite for x in calculator_rows(r,"lite")],
         "sft_calculator_reasoning":[x for r in reasoning for x in calculator_rows(r,"reasoning")]}
+    exports["sft_lite_answer_only"]=[direct(r,"lite",True) for r in lite]
+    exports["sft_reasoning_answer_only"]=[direct(r,"reasoning",True) for r in reasoning]
+    # Matched and full V1 controls are explicitly labeled V1, not improved data.
+    from src.m4.experiments import structured_row
+    def v1_control(r):
+        converted=structured_row(r)
+        return {"id":"V1-"+r["id"],"case_group":r["case_id"],"task":"v1_control",
+            "difficulty":r.get("difficulty","unclassified"),"split":"train","source":SOURCE,
+            "messages":converted["messages"]}
+    exports["v1_control_matched"]=[v1_control(by_id[r["parent_id"]]) for r in reviewed if r["parent_id"]]
+    exports["v1_control_full"]=[v1_control(r) for r in base_rows]
     stats={name:write(out/(name+".jsonl"),rows) for name,rows in exports.items()}
     backlog=[{"id":r["id"],"case_id":r["case_id"],"oracle_kind":r["oracle"]["kind"],"language_pair":r.get("language_pair"),
               "question_chars":len(r["question"]),"context_chars":len(r["messages"][1]["content"])}

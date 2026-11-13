@@ -47,7 +47,7 @@ def load_training(path,manifest,limit,seed):
     path=Path(path);meta=json.loads(Path(manifest).read_text(encoding="utf-8"))
     entry=meta["exports"].get(path.stem)
     require(entry and digest(path)==entry["sha256"],"Unverified export checksum")
-    require(path.stem in ("sft_lite","sft_reasoning","sft_calculator_lite","sft_calculator_reasoning"),"Not an SFT export")
+    require(path.stem in ("sft_lite","sft_reasoning","sft_calculator_lite","sft_calculator_reasoning","sft_lite_answer_only","sft_reasoning_answer_only","v1_control_matched","v1_control_full"),"Not an SFT export")
     rows=read(path)
     require(len(rows)==entry["rows"] and len({r["id"] for r in rows})==len(rows),"Export count/IDs")
     require(all(r["source"]==SOURCE and r["split"]=="train" for r in rows),"Unexpected training provenance")
