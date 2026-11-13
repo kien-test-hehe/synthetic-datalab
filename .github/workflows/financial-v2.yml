@@ -24,6 +24,7 @@ jobs:
       - run: python -m src.authored_export
       - run: python -m src.eval.independent
       - run: python -m src.v2.build
+      - run: python -m src.v2.audit
       - uses: actions/upload-artifact@v4
         with:
           name: financialdoclab-v2-pilot

@@ -9,16 +9,17 @@ import hashlib
 import json
 from pathlib import Path
 from types import SimpleNamespace
-from src.v2.build import digest,require
+from src.v2.build import digest,require,read,SYSTEM,PROGRAM_SCHEMA,SCHEMA
 from src.v2.training import model_fingerprint,token_ids
 from src.eval.independent import FROZEN_V1
-from src.eval.model_eval import run
+from src.eval.model_eval import run,synthetic_example
+from src.v2.runtime import run_plan
 
 def fingerprint(args):
     return {"model_sha256":model_fingerprint(args.model),
             "adapter_sha256":model_fingerprint(args.adapter) if args.adapter else None,
             "template_kwargs":json.loads(args.template_kwargs),"num_ctx":args.num_ctx,
-            "max_tokens":args.max_tokens,"temperature":0,"seed":42}
+            "max_tokens":args.max_tokens,"temperature":0,"seed":42,"mode":args.mode}
 
 def verify_eval(args,signature):
     root=Path(args.benchmark_root)
@@ -31,12 +32,42 @@ def verify_eval(args,signature):
         require(protocol==signature,"Model or settings differ from preregistered protocol")
     return path
 
+def prompt_key(messages):
+    return json.dumps(messages,sort_keys=True,ensure_ascii=False)
+
+def calculator_call(messages,allowed,language,generate):
+    """No gold data: route, execute, and answer with predicted operands."""
+    lang=language if language in SYSTEM else "en"
+    user=messages[1]["content"]
+    plan_messages=[{"role":"system","content":SYSTEM[lang]+"\n"+PROGRAM_SCHEMA},
+                   {"role":"user","content":user}]
+    raw,plan_counts=generate(plan_messages)
+    if plan_counts.get("done_reason")=="length":
+        raise ValueError("Calculator plan truncated")
+    try:
+        plan=json.loads(raw)
+        result=run_plan(plan,allowed)
+    except (TypeError,ValueError,KeyError) as exc:
+        raise ValueError("Invalid calculator plan: "+str(exc)) from exc
+    final_messages=messages
+    if result is not None:
+        final_messages=[{"role":"system","content":SYSTEM[lang]+"\n"+SCHEMA+"\nThe application appended a trusted calculator result after the question; use it only for the requested computation."},
+                        {"role":"user","content":user+"\n\nApplication calculator result: "+json.dumps(result,allow_nan=False)}]
+    final,counts=generate(final_messages)
+    counts=dict(counts)
+    counts["calculator_plan"]=plan
+    counts["calculator_result"]=result
+    counts["plan_prompt_tokens"]=plan_counts.get("prompt_eval_count")
+    counts["plan_generated_tokens"]=plan_counts.get("eval_count")
+    return final,counts
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--model",required=True);p.add_argument("--adapter");p.add_argument("--output",required=True)
     p.add_argument("--split",choices=("dev","test"),default="dev")
     p.add_argument("--benchmark-root",default="evaluation/independent/exports")
     p.add_argument("--num-ctx",type=int,default=8192);p.add_argument("--max-tokens",type=int,default=512)
+    p.add_argument("--mode",choices=("direct","calculator"),default="direct")
     p.add_argument("--template-kwargs",default="{}");p.add_argument("--limit",type=int,default=0)
     p.add_argument("--protocol");p.add_argument("--unlock-test",action="store_true")
     p.add_argument("--write-protocol",action="store_true")
@@ -70,6 +101,19 @@ def main():
                  pad_token_id=tok.pad_token_id if tok.pad_token_id is not None else tok.eos_token_id)
         new=y[0,len(ids):].tolist()
         return tok.decode(new,skip_special_tokens=True),{"prompt_eval_count":len(ids),"eval_count":len(new),"done_reason":"length" if len(new)>=max_tokens else "stop"}
+    direct_call=call
+    if args.mode=="calculator":
+        lookup={}
+        for row in read(dataset):
+            ex=synthetic_example(row)
+            key=prompt_key(ex["messages"])
+            value=(ex["allowed_citations"],str(ex["language_pair"]).rsplit("-",1)[-1])
+            require(key not in lookup or lookup[key]==value,"Ambiguous benchmark prompt metadata")
+            lookup[key]=value
+        def call(messages,model_name,endpoint,timeout,temperature,num_ctx,max_tokens):
+            allowed,language=lookup[prompt_key(messages)]
+            return calculator_call(messages,allowed,language,
+                lambda m:direct_call(m,model_name,endpoint,timeout,temperature,num_ctx,max_tokens))
     settings=SimpleNamespace(endpoint="http://127.0.0.1:11434",dataset=str(dataset),kind="synthetic",context="gold",chunks=None,db=None,k=10,
         limit=args.limit,output=str(out),model=str(args.model)+("+"+str(args.adapter) if args.adapter else ""),timeout=180,
         temperature=0,num_ctx=args.num_ctx,max_tokens=args.max_tokens,max_context_chars=200000)
