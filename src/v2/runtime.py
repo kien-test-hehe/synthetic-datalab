@@ -1,7 +1,7 @@
 """Validate and execute only supported calculator plans; never run arbitrary code."""
-from src.v2.calculator import calculate
+from src.v2.calculator import calculate,ASSUMPTION_REF,assumption_has_number
 
-def run_plan(plan,allowed_citations):
+def run_plan(plan,allowed_citations,assumptions=None):
     if not isinstance(plan,dict) or set(plan)!={"status","operands","expression","unit","citations"} or plan["status"] not in ("answerable","direct","insufficient"):
         raise ValueError("Invalid calculator plan")
     cites=plan["citations"]
@@ -18,7 +18,11 @@ def run_plan(plan,allowed_citations):
     if not isinstance(ops,dict):raise ValueError("Invalid operands")
     values={}
     for k,v in ops.items():
-        if not isinstance(v,dict) or set(v)!={"value","evidence_id","label"} or not isinstance(v["label"],str) or not v["label"].strip() or v["evidence_id"] not in cites:
+        if not isinstance(v,dict) or set(v)!={"value","evidence_id","label"} or not isinstance(v["label"],str) or not v["label"].strip() :
+            raise ValueError("Invalid operand source reference")
+        if v["evidence_id"]==ASSUMPTION_REF:
+            if not assumption_has_number(assumptions,v["value"]):raise ValueError("Unsupported assumption operand")
+        elif v["evidence_id"] not in cites:
             raise ValueError("Invalid operand source reference")
         values[k]=v["value"]
     return {"value":calculate(plan["expression"],values),"unit":unit}

@@ -1,7 +1,7 @@
-# FinancialDocLab V2 (pilot)
+# FinancialDocLab V2 (1,000-QA pilot)
 
 V1 remains immutable. The independent 500-dev/1,000-test benchmark is frozen.
-V2 only exports individually authored revisions/new rows from batches/*.jsonl;
+This milestone contains 1,000 canonical QA: 838 individual V1 revisions and 162 new fictional QA. The remaining 9,162 V1 rows are not upgraded automatically. V2 only exports individually authored revisions/new rows from batches/*.jsonl;
 unreviewed V1 rows are explicitly listed in the backlog, never silently upgraded.
 
 Each revision pins a parent ID. Evidence, assumptions and oracle are inherited
@@ -11,7 +11,7 @@ authored. New fictional rows specify all evidence and oracle. All variants of a
 counterfactual family share case_group. No crawled financial documents enter SFT.
 
 The calculator supports a bounded arithmetic AST and named operands with source
-IDs. Numeric rows need executable verification against their oracle. Source-ID
+IDs. An explicit @assumptions operand source is supported only for a numeric token present in the scenario assumptions; it is not an evidence citation. This validates token presence, not semantic extraction. Numeric rows need executable verification against their oracle. Source-ID
 checks are not proof that values are correctly extracted from evidence; review
 the labels and evidence manually. Independent review and language verification
 are not claimed. Exact question, evidence-block and case checks against both
@@ -24,8 +24,8 @@ Build:
     python -m unittest discover -s tests -p test_v2.py -v
 
 Exports: canonical, lite (easy/medium only), reasoning (all reviewed rows),
-calculator-lite and calculator-reasoning (two examples per program: plan and
-trusted-result final answer). Program and final-answer tasks are distinct; a
+calculator-lite and calculator-reasoning (one routing plan for every row, plus a
+trusted-result final example for each single-result calculation). Program and final-answer tasks are distinct; a
 backend must execute and validate a plan before injecting the result. The
 direct task preserves the existing evaluator's five-key JSON answer contract.
 No actual GPU training is implied by a successful export.

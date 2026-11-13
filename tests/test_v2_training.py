@@ -23,3 +23,9 @@ class Tests(unittest.TestCase):
         plan["operands"]["y"]["evidence_id"]="B"
         with self.assertRaises(ValueError):run_plan(plan,["A"])
         self.assertIsNone(run_plan({"status":"insufficient","operands":{},"expression":None,"unit":None,"citations":["A"]},["A"]))
+
+    def test_assumptions(self):
+        plan={"status":"answerable","operands":{"x":{"value":20,"evidence_id":"@assumptions","label":"rate"},"y":{"value":100,"evidence_id":"A","label":"base"}},"expression":"y*x/100","unit":"usd","citations":["A"]}
+        self.assertEqual(run_plan(plan,["A"],"Tax rate 20%."),{"value":20.0,"unit":"usd"})
+        with self.assertRaises(ValueError):run_plan(plan,["A"])
+        with self.assertRaises(ValueError):run_plan(plan,["A"],"Tax rate 25%.")

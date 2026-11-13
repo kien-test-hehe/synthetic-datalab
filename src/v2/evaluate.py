@@ -35,7 +35,7 @@ def verify_eval(args,signature):
 def prompt_key(messages):
     return json.dumps(messages,sort_keys=True,ensure_ascii=False)
 
-def calculator_call(messages,allowed,language,generate):
+def calculator_call(messages,allowed,language,generate,assumptions=None):
     """No gold data: route, execute, and answer with predicted operands."""
     lang=language if language in SYSTEM else "en"
     user=messages[1]["content"]
@@ -46,7 +46,7 @@ def calculator_call(messages,allowed,language,generate):
         raise ValueError("Calculator plan truncated")
     try:
         plan=json.loads(raw)
-        result=run_plan(plan,allowed)
+        result=run_plan(plan,allowed,assumptions)
     except (TypeError,ValueError,KeyError) as exc:
         raise ValueError("Invalid calculator plan: "+str(exc)) from exc
     final_messages=messages
@@ -107,13 +107,13 @@ def main():
         for row in read(dataset):
             ex=synthetic_example(row)
             key=prompt_key(ex["messages"])
-            value=(ex["allowed_citations"],str(ex["language_pair"]).rsplit("-",1)[-1])
+            value=(ex["allowed_citations"],str(ex["language_pair"]).rsplit("-",1)[-1],row.get("accounting_assumptions"))
             require(key not in lookup or lookup[key]==value,"Ambiguous benchmark prompt metadata")
             lookup[key]=value
         def call(messages,model_name,endpoint,timeout,temperature,num_ctx,max_tokens):
-            allowed,language=lookup[prompt_key(messages)]
+            allowed,language,assumptions=lookup[prompt_key(messages)]
             return calculator_call(messages,allowed,language,
-                lambda m:direct_call(m,model_name,endpoint,timeout,temperature,num_ctx,max_tokens))
+                lambda m:direct_call(m,model_name,endpoint,timeout,temperature,num_ctx,max_tokens),assumptions)
     settings=SimpleNamespace(endpoint="http://127.0.0.1:11434",dataset=str(dataset),kind="synthetic",context="gold",chunks=None,db=None,k=10,
         limit=args.limit,output=str(out),model=str(args.model)+("+"+str(args.adapter) if args.adapter else ""),timeout=180,
         temperature=0,num_ctx=args.num_ctx,max_tokens=args.max_tokens,max_context_chars=200000)

@@ -26,6 +26,13 @@ class CanonicalTests(unittest.TestCase):
         c=calculator_rows(r,"lite");self.assertEqual(len(c),2)
         self.assertNotIn("Application calculator result",c[0]["messages"][1]["content"])
         self.assertIn("Application calculator result",c[1]["messages"][1]["content"])
+    def test_explicit_assumptions(self):
+        rec,base=self.fixture()
+        base["accounting_assumptions"]="USD; comparison base 80."
+        rec["gold"]["program"]["operands"]["prior"]["evidence_id"]="@assumptions"
+        self.assertEqual(canonical(rec,base)["oracle"]["value"],25)
+        base["accounting_assumptions"]="USD; comparison base missing."
+        with self.assertRaises(ValueError):canonical(rec,base)
     def test_bad_operand(self):
         rec,base=self.fixture();rec["gold"]["program"]["operands"]["prior"]["value"]=70
         with self.assertRaises(ValueError):canonical(rec,base)
