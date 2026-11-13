@@ -64,7 +64,7 @@ ASSUMPTION_REF="@assumptions"
 def assumption_has_number(assumptions,value):
     if not isinstance(assumptions,str) or not assumptions.strip():return False
     target=number(value)
-    for token in re.findall(r"(?<![0-9.])[+-]?(?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+)(?![0-9.])",assumptions):
+    for token in re.findall(r"(?<![0-9.])[+-]?(?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+)(?![0-9]|\.[0-9])",assumptions):
         try:
             if math.isclose(float(token),target,rel_tol=1e-12,abs_tol=1e-12):return True
         except (ValueError,OverflowError):continue
