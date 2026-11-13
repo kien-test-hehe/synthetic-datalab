@@ -1,7 +1,7 @@
-# FinancialDocLab V2 (1,500-QA pilot)
+# FinancialDocLab V2 (2,000-QA pilot)
 
 V1 remains immutable. The independent 500-dev/1,000-test benchmark is frozen.
-This checkpoint contains 1,500 canonical QA: 1,278 individual V1 revisions and 222 new fictional QA. The remaining 8,722 V1 rows are not upgraded automatically. The next pilot target is 2,000 canonical QA. V2 only exports individually authored revisions/new rows from batches/*.jsonl;
+This checkpoint contains 2,000 canonical QA: 1,676 individual V1 revisions and 324 new fictional QA. The remaining 8,324 V1 rows are not upgraded automatically. The full V2 target remains 12,000 canonical QA (10,000 V1 revisions and 2,000 new fictional QA). V2 only exports individually authored revisions/new rows from batches/*.jsonl;
 unreviewed V1 rows are explicitly listed in the backlog, never silently upgraded.
 
 Each revision pins a parent ID. Evidence, assumptions and oracle are inherited
@@ -33,3 +33,7 @@ No actual GPU training is implied by a successful export.
 ## 1,500-QA checkpoint
 
 Batches m7_016–m7_023 contribute 440 individually rewritten V1 QA after duplicate parent removal; m8_004 contributes 60 new fictional QA across ten new case groups. The 500 added rows include 308 single numeric programs, 94 insufficient-evidence answers, and 98 qualitative answers. Source facts and V1 oracles remain frozen. No bulk question or rationale generator is used: code only serializes explicitly authored records and computes export variants. The additional rows have not been independently expert-audited or used in a training run.
+
+## 2,000-QA checkpoint
+
+Batches m7_024–m7_030 add 398 individually authored V1 revisions; m8_005–m8_006 add 102 original fictional QA in 17 cases and 16 case groups. The 500 additions contain 345 single-numeric, 17 multi-numeric, 75 qualitative, and 63 insufficient-evidence answers. Added coverage includes 38 multi-document, 14 table, 17 multi-result, 11 conflict, and 3 robustness tasks (task tags are mutually exclusive; evidence can exercise additional skills). A paired covenant-waiver counterfactual shares a case group across the before/after-reporting-date variants. The calculation programs retain named operands and signed numeric values; the source/oracle snapshots and both held-out benchmarks are unchanged. No bulk rationale or question generation, no independent financial expert certification, and no GPU training claim.
