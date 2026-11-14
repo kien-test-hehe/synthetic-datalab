@@ -1,0 +1,31 @@
+name: FinancialDocLab V2 pilot
+on:
+  pull_request:
+    paths:
+      - 'sft/v2/**'
+      - 'src/v2/**'
+      - 'tests/test_v2*.py'
+      - 'src/authored*.py'
+      - 'src/financial*.py'
+      - 'sft/authored/**'
+      - 'evaluation/independent/**'
+      - 'src/eval/independent.py'
+      - '.github/workflows/financial-v2.yml'
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m unittest discover -s tests -p 'test_v2*.py' -v
+      - run: python -m src.authored_export
+      - run: python -m src.eval.independent
+      - run: python -m src.v2.build
+      - run: python -m src.v2.audit
+      - uses: actions/upload-artifact@v4
+        with:
+          name: financialdoclab-v2-pilot
+          path: sft/v2/exports/
