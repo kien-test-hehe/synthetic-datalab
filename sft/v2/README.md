@@ -1,7 +1,7 @@
-# FinancialDocLab V2 (6,000-QA pilot)
+# FinancialDocLab V2 (7,000-QA pilot)
 
 V1 remains immutable. The independent 500-dev/1,000-test benchmark is frozen.
-This checkpoint contains 6,000 canonical QA: 5,028 individual V1 revisions and 972 new fictional QA. The remaining 4,972 V1 rows are not upgraded automatically. The full V2 target remains 12,000 canonical QA (10,000 V1 revisions and 2,000 new fictional QA). V2 only exports individually authored revisions/new rows from batches/*.jsonl;
+This checkpoint contains 7,000 canonical QA: 5,866 individual V1 revisions and 1,134 new fictional QA. The remaining 4,134 V1 rows are not upgraded automatically. The full V2 target remains 12,000 canonical QA (10,000 V1 revisions and 2,000 new fictional QA). V2 only exports individually authored revisions/new rows from batches/*.jsonl;
 unreviewed V1 rows are explicitly listed in the backlog, never silently upgraded.
 
 Each revision pins a parent ID. Evidence, assumptions and oracle are inherited
@@ -68,3 +68,14 @@ Added exactly 1,000 canonical rows: 838 individually authored V1 revisions in m7
 New fictional cases cover carve-out EBITDA, restricted and trapped cash, diluted EPS, debt modification, PPE component replacement, supplier rebates, pension OCI, signed report version precedence, uncertain tax claims, OCR unit/sign errors, guarantees, turnover rent, customer return liabilities, partial lease termination, held-for-sale machinery, repo collateral, acquisition escrow and contingent consideration, and constant-currency revenue bridges. Every added row has a concise rationale and separately authored explanatory detail; the detailed answer may also repeat the short calculation for clarity. Previously revised parents and examples without sufficiently supported or bounded arithmetic were skipped. Calculator expressions were corrected for reserved names, allowed arithmetic constants, AST size and source-number formatting; neither V1 oracles nor calculator limits were changed. V1 and independent benchmark remain frozen. Code serializes authored rows and validates and exports them; no bulk QA generator, independent financial expert certification, semantic leakage guarantee, or completed model fine-tuning is claimed.
 
 Remaining target: 4,972 V1 revisions and 1,028 new fictional QA (6,000 total).
+
+
+## 7,000-QA checkpoint
+
+Added exactly 1,000 canonical rows: 838 individually authored V1 revisions in m7_094–m7_108 and 162 new fictional QA in m8_019–m8_021 (18 new case groups, V2-N129–V2-N146). The increment contains 569 numeric, 19 multi-numeric, 220 qualitative and 192 insufficient-information answers; 513 Vietnamese and 487 English; 114 easy, 734 medium and 152 hard. Tasks: 328 multi-document, 192 abstention, 141 financial explanation, 94 basic reasoning, 87 conflict, 51 advanced reasoning, 33 evidence selection, 20 temporal, 20 unit conversion, 19 multi-result, 13 robustness, 1 extraction and 1 table.
+
+The new fictional cases cover import duties/VAT, syndicated lending, roaming settlement, pharmaceutical milestones, fuel surcharge, concession reserves, fund fee transitions, commodity collars, consignment, covenant waiver dates, spoilage, merchant settlement, prior-period errors, interline tickets, progressive royalties, reinsurance reinstatement, cash-settled share-based payments and acquisition measurement-period adjustments. Related financial concepts can recur; distinct cases do not establish semantic OOD. V1 parents already revised were skipped. Quarterly accrual expressions use permitted calculator literals (2+1) instead of a disallowed literal 3. No bulk question generator was used; code serializes authored rows and verifies arithmetic.
+
+The 7,000-row artifact was compared against the 6,000-row artifact: exactly 1,000 added IDs, zero removed, zero changed prior canonical rows, and byte-identical full V1 control. The lexical audit still reports two candidates at Jaccard 0.75 (V2-N066-d / IE-D07-c and V2-N117-f / M4-10-a); no additional candidates appeared at the 0.72 threshold. Semantic review remains required. No independent financial expert certification or fine-tuning result is claimed.
+
+Remaining target: 4,134 V1 revisions and 866 new fictional QA (5,000 total).
