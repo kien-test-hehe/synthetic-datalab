@@ -1,7 +1,7 @@
-# FinancialDocLab V2 (4,000-QA pilot)
+# FinancialDocLab V2 (5,000-QA pilot)
 
 V1 remains immutable. The independent 500-dev/1,000-test benchmark is frozen.
-This checkpoint contains 4,000 canonical QA: 3,352 individual V1 revisions and 648 new fictional QA. The remaining 6,648 V1 rows are not upgraded automatically. The full V2 target remains 12,000 canonical QA (10,000 V1 revisions and 2,000 new fictional QA). V2 only exports individually authored revisions/new rows from batches/*.jsonl;
+This checkpoint contains 5,000 canonical QA: 4,190 individual V1 revisions and 810 new fictional QA. The remaining 5,810 V1 rows are not upgraded automatically. The full V2 target remains 12,000 canonical QA (10,000 V1 revisions and 2,000 new fictional QA). V2 only exports individually authored revisions/new rows from batches/*.jsonl;
 unreviewed V1 rows are explicitly listed in the backlog, never silently upgraded.
 
 Each revision pins a parent ID. Evidence, assumptions and oracle are inherited
@@ -52,3 +52,10 @@ Added exactly 1,000 canonical rows: 838 individually authored V1 revisions in m7
 New fictional cases V2-N075–V2-N092 cover liquidity caps, secured receivable financing, supplier finance, reinsurance caps, effective-interest bonds, weighted EPS, pension movements, NCI, contract catch-up, restricted deposits, deferred tax recoverability, investment waterfalls, acquisition earn-outs, emission obligations, take-or-pay, regulatory assets, progressive royalty and invalid ad impressions. Previously revised parents were excluded. A036-19-d was deferred because the exact integer floor operation is outside the bounded arithmetic calculator; A033-29-h was not selected to keep the increment at exactly 838 revisions. No changes to the calculator whitelist or frozen V1 oracles were made.
 
 The 3,000-row lexical audit candidate V2-N066-d vs IE-D07-c (Jaccard 0.75) was manually inspected: deferred grant liability versus deferred tax liability, with distinct source facts, accounting mechanisms and answers. It is a lexical similarity candidate, not an exact duplicate. This review does not prove absence of semantic leakage. The independent benchmark and V1 remain frozen. No bulk question/rationale generator, independent financial expert certification, or GPU training claim.
+
+
+## 5,000-QA checkpoint
+
+Added exactly 1,000 canonical rows: 838 individually authored V1 revisions in m7_065–m7_078 and 162 original fictional QA in m8_013–m8_015 (18 new case groups, V2-N093–V2-N110). All 1,000 parent/new IDs are unique. Difficulty: 196 easy, 715 medium, 89 hard. Task counts: 332 multi-document, 168 abstention, 142 conflict, 87 basic reasoning, 54 table, 53 financial explanation, 51 advanced reasoning, 38 unit conversion, 36 evidence selection, 18 temporal, 18 multi-result and 3 robustness.
+
+Topics include NPL evidence conflicts, grant subsidy, agency revenue, unitized NAV, compute credits, layered reinsurance, downstream consolidation, FX receivables, SSP allocation, guarantees, hedge cash versus OCI, pharma milestones, joint-cost decisions, collateral stress, reserve sweeps, gift-card chargebacks, SBC forfeiture and turnover rent. Some V1 concise/detailed explanations share the same individually authored core reasoning, with citations added to the detailed version; this is not a claim of independent or uniformly longer rationale variants. New cases contain separately authored concise and detailed explanations. Previously revised parents and unsupported or over-bounded calculator examples were skipped rather than changing the frozen oracle or calculator limits. No bulk content generator, expert certification, semantic-leakage guarantee or GPU fine-tuning is claimed. Remaining target: 5,810 V1 revisions and 1,190 new fictional QA.
