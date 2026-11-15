@@ -1,7 +1,7 @@
-# FinancialDocLab V2 (9,000-QA pilot)
+# FinancialDocLab V2 (10,000-QA pilot)
 
 V1 remains immutable. The independent 500-dev/1,000-test benchmark is frozen.
-This checkpoint contains 9,000 canonical QA: 7,542 individual V1 revisions and 1,458 new fictional QA. The remaining 2,458 V1 rows are not upgraded automatically. The full V2 target remains 12,000 canonical QA (10,000 V1 revisions and 2,000 new fictional QA). V2 only exports individually authored revisions/new rows from batches/*.jsonl;
+This checkpoint contains 10,000 canonical QA: 8,380 individual V1 revisions and 1,620 new fictional QA. The remaining 1,620 V1 rows are not upgraded automatically. The full V2 target remains 12,000 canonical QA (10,000 V1 revisions and 2,000 new fictional QA). V2 only exports individually authored revisions/new rows from batches/*.jsonl;
 unreviewed V1 rows are explicitly listed in the backlog, never silently upgraded.
 
 Each revision pins a parent ID. Evidence, assumptions and oracle are inherited
@@ -92,3 +92,16 @@ The 9,000-row artifact from commit 9cd76a712b05879f0ca09ce3e59b5bfa254669ea (wor
 Exports: canonical 9,000; SFT Lite and Lite Answer-only 8,013 each; SFT Reasoning and Reasoning Answer-only 9,000 each; Calculator Lite 12,931; Calculator Reasoning 14,755; matched V1 control 7,542; full V1 control 10,000. Calculator variants include multiple training examples for some canonical QA and are not additional unique questions. Total cases 1,114; case groups 1,105. No independent financial expert certification, real-world accounting compliance, or successful model training is claimed.
 
 Remaining target: 2,458 V1 revisions and 542 new fictional QA (3,000 total).
+
+
+## 10,000-QA checkpoint
+
+Added exactly 1,000 canonical QA: 838 individually authored V1 revisions (m7_136–m7_149) and 162 original fictional QA (m8_028–m8_030; 18 new case groups V2-N183–V2-N200). The increment includes 540 single-numeric, 231 qualitative, and 229 insufficient-information answers; 489 Vietnamese and 511 English answers. Difficulty labels: 4 easy, 979 medium, 17 hard. Tasks: 390 multi-document, 229 abstention, 225 financial explanation, 117 advanced reasoning, 15 unit conversion, 14 temporal, 6 conflict and 4 evidence selection. These are author labels, not empirically measured difficulty.
+
+Coverage includes disclosure and governance, multi-period reporting, segment and sector economics, cash conversion, portfolio attribution, factoring, foreign exchange exposures, cash equivalents and covenant instruments. Fictional cases add borrowing-base lending, healthcare capitation, freight, loyalty, nonaccrual interest, water utility, construction contracts, telecommunications allocation, agriculture, margin lending, marketplace principal/agent, wind generation, warranty provisions, bank NIM, consignment, solar curtailment, insurance combined ratio and SaaS ARR retention. Related concepts may recur. Some concise and detailed explanations in m7_146–m7_148 intentionally share the same individually authored rationale with citation formatting; they are not independent rationale rewrites.
+
+The 10,000-row artifact from commit 6986676819e9b249bbf83b350adf11b3629bef0b (workflow run 43670065724, artifact 14143836983) was compared with the 9,000-row artifact: 1,000 new unique IDs, zero removed, zero changed prior canonical rows, byte-identical full V1 control, ZIP integrity and all ten export row counts and SHA-256 checks passed. The grouped warehouse capacity operand was corrected to thousands of slots and scaled by 1,000 to avoid comma-token parsing ambiguity; the V1 oracle was unchanged. The lexical audit still reports the two existing candidates at Jaccard 0.75 (V2-N066-d / IE-D07-c and V2-N117-f / M4-10-a), with no new candidates at threshold 0.72. Semantic review remains required.
+
+Exports: canonical 10,000; SFT Lite and Lite Answer-only 8,996 each; SFT Reasoning and Reasoning Answer-only 10,000 each; Calculator Lite 14,437; Calculator Reasoning 16,295; matched V1 control 8,380; full V1 control 10,000. There are 1,236 cases and 1,227 case groups. No independent expert validation, accounting compliance guarantee, semantic leakage guarantee, or GPU training result is claimed.
+
+Remaining target: 1,620 V1 revisions and 380 new fictional QA (2,000 total).
