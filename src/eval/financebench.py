@@ -17,8 +17,10 @@ import urllib.request
 from collections import Counter
 from pathlib import Path
 
-QA_URL = "https://raw.githubusercontent.com/patronus-ai/financebench/main/data/financebench_open_source.jsonl"
-PDF_BASE = "https://raw.githubusercontent.com/patronus-ai/financebench/main/pdfs/"
+UPSTREAM_COMMIT = "cc39aeb4afdf33909ee1412188bf89035950c2eb"
+UPSTREAM_QA_GIT_BLOB_SHA1 = "4aef1d43a443474ba193f158f2baf70550ff528d"
+QA_URL = f"https://raw.githubusercontent.com/patronus-ai/financebench/{UPSTREAM_COMMIT}/data/financebench_open_source.jsonl"
+PDF_BASE = f"https://raw.githubusercontent.com/patronus-ai/financebench/{UPSTREAM_COMMIT}/pdfs/"
 REPO = "https://github.com/patronus-ai/financebench"
 DOC_RX = re.compile(r"^[A-Za-z0-9_.-]+$")
 
@@ -46,6 +48,8 @@ def qa_manifest(qa):
         "license_of_published_qa":"CC-BY-NC-4.0",
         "pdf_rights":"CHECK separately; published QA license does not grant blanket rights to PDFs",
         "upstream_qa":QA_URL,
+        "upstream_commit":UPSTREAM_COMMIT,
+        "upstream_qa_git_blob_sha1":UPSTREAM_QA_GIT_BLOB_SHA1,
         "upstream_repo":REPO,
     }
 
@@ -58,6 +62,9 @@ def fetch(url, timeout=90):
 
 def download_qa(path):
     b=fetch(QA_URL)
+    blob_hash=hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+    if blob_hash!=UPSTREAM_QA_GIT_BLOB_SHA1:
+        raise ValueError("Official FinanceBench QA checksum mismatch")
     path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
     path.write_bytes(b)
     qa=read_jsonl(path)
@@ -202,14 +209,19 @@ def retrieve(conn, query, k=10, doc_id=None):
             for x in conn.execute(sql,params)]
 
 
+def gold_pages(item):
+    """Official FinanceBench indices are zero-based; stored PDF pages are one-based."""
+    return {(e.get("doc_name") or item["doc_name"], int(e["evidence_page_num"]) + 1)
+            for e in item.get("evidence", []) if e.get("evidence_page_num") is not None}
+
+
 def eval_retrieval(qa_path,db_path,k=10,oracle_doc=False,include_company=False):
     qas=read_jsonl(qa_path)
     stats=Counter();samples=[];conn=sqlite3.connect(db_path)
     try:
         for item in qas:
             evidence=item.get("evidence") or []
-            gold={(x.get("doc_name",item["doc_name"]),int(x["evidence_page_num"]))
-                  for x in evidence if x.get("evidence_page_num") is not None}
+            gold=gold_pages(item)
             if not gold:continue
             query=(item.get("company","")+" "+item["question"] if include_company
                     else item["question"])
@@ -237,7 +249,7 @@ def eval_retrieval(qa_path,db_path,k=10,oracle_doc=False,include_company=False):
         "doc_recall_at_k":stats["doc_hit"]/n,
         "page_recall_at_k":stats["page_hit"]/n,
         "all_gold_pages_at_k":stats["all_gold_pages"]/n,
-        "warning":"Published evidence page numbers may require alignment with physical PDF page indexing",
+        "page_numbering":"one_based_physical_pdf; official zero-based gold converted",
         "per_question":samples,
     }
 

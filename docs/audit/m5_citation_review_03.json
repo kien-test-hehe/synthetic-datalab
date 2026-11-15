@@ -1,0 +1,295 @@
+{
+  "base": "336b0c577332f63969701a6024cdaea9fd090ba2",
+  "scope": "Manual review against authored casebook. No numeric oracle changes.",
+  "decisions": {
+    "A011-26-d": {
+      "status": "repaired",
+      "before": [
+        "A",
+        "B"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C"
+      ],
+      "source": "sft/authored/batch_011/cases/04_vi_en_integrated_finance.jsonl"
+    },
+    "A016-09-d": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C"
+      ],
+      "source": "sft/authored/batch_016/cases/02_en_tables_and_scope.jsonl"
+    },
+    "A019-01-c": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_019/cases/01_vi_disclosure_and_governance.jsonl"
+    },
+    "A021-27-d": {
+      "status": "repaired",
+      "before": [
+        "A",
+        "B"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C"
+      ],
+      "source": "sft/authored/batch_021/cases/04_vi_en_sector_economics.jsonl"
+    },
+    "A027-04-b": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_027/cases/01_vi_tax_consolidation.jsonl"
+    },
+    "A027-04-d": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_027/cases/01_vi_tax_consolidation.jsonl"
+    },
+    "A031-03-e": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_031/cases/01_vi_sector_contracts.jsonl"
+    },
+    "A031-14-d": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C"
+      ],
+      "source": "sft/authored/batch_031/cases/02_en_sector_contracts.jsonl"
+    },
+    "A031-17-e": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C"
+      ],
+      "source": "sft/authored/batch_031/cases/03_en_vi_sector_contracts.jsonl"
+    },
+    "A031-28-d": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C",
+        "D"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "source": "sft/authored/batch_031/cases/04_vi_en_sector_contracts.jsonl"
+    },
+    "A032-02-d": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C"
+      ],
+      "source": "sft/authored/batch_032/cases/01_vi_financing_instruments.jsonl"
+    },
+    "A033-28-d": {
+      "status": "repaired",
+      "before": [
+        "B",
+        "C"
+      ],
+      "after": [
+        "A",
+        "B",
+        "C"
+      ],
+      "source": "sft/authored/batch_033/cases/04_vi_en_kpi_reconciliation.jsonl"
+    },
+    "A034-23-a": {
+      "status": "repaired",
+      "before": [
+        "B"
+      ],
+      "after": [
+        "A",
+        "B"
+      ],
+      "source": "sft/authored/batch_034/cases/03_en_vi_estimate_revisions.jsonl"
+    },
+    "A017-18-d": {
+      "status": "no_change",
+      "reason": "A supplies at-par derecognition terms; draft debt120 is not authoritative."
+    },
+    "A019-06-a": {
+      "status": "no_change",
+      "reason": "A contains all maturity buckets, totaling120; B only repeats total."
+    },
+    "A019-06-b": {
+      "status": "no_change",
+      "reason": "A contains all maturity buckets; B is redundant."
+    },
+    "A021-27-b": {
+      "status": "no_change",
+      "reason": "A supplies volume, first-attempt failure and retry success; C fixed cost8 irrelevant."
+    },
+    "A026-03-d": {
+      "status": "no_change",
+      "reason": "A and C provide balances and incremental rates; B provides base rates, not required."
+    },
+    "A026-03-e": {
+      "status": "no_change",
+      "reason": "A and C provide balances and reset proportion; B base rates cancel."
+    },
+    "A026-05-b": {
+      "status": "no_change",
+      "reason": "B supplies ARPU and 80% margin; C has 8-month survival, unrelated."
+    },
+    "A026-05-d": {
+      "status": "no_change",
+      "reason": "B provides CAC and monthly contribution inputs; C retention is irrelevant to payback calculation."
+    },
+    "A028-14-e": {
+      "status": "no_change",
+      "reason": "A and B provide original NOI and stress changes; debt service35 in C is irrelevant."
+    },
+    "A029-23-c": {
+      "status": "no_change",
+      "reason": "A contains grades, recoveries and payability; price and fixed expenses irrelevant."
+    },
+    "A029-29-c": {
+      "status": "no_change",
+      "reason": "A contains inputs and yields; fixed cost6 is unrelated."
+    },
+    "A029-29-d": {
+      "status": "no_change",
+      "reason": "A and B provide volumes/yields/prices; C fixed costs not used in revenue."
+    },
+    "A031-03-b": {
+      "status": "no_change",
+      "reason": "A and B provide cohort, service and elapsed months; C financing/costs not needed."
+    },
+    "A031-03-d": {
+      "status": "no_change",
+      "reason": "A and B provide original principal and collections; C costs not needed."
+    },
+    "A031-10-d": {
+      "status": "no_change",
+      "reason": "A/B/C supply deficiency charge, makeup portion and settlement; D cost7 unrelated."
+    },
+    "A031-15-b": {
+      "status": "no_change",
+      "reason": "A supplies ore, grade and target/actual recovery; B spot price9000 irrelevant."
+    },
+    "A031-15-c": {
+      "status": "no_change",
+      "reason": "A supplies recovered quantity and bonus rate; B commodity price is not processor revenue."
+    },
+    "A031-22-e": {
+      "status": "no_change",
+      "reason": "A and B supply allocation and acceptance; D potential exercise price8 is not the current liability."
+    },
+    "A032-03-e": {
+      "status": "no_change",
+      "reason": "A and B supply EIR, principal and coupon; E is a misleading slide."
+    },
+    "A032-12-a": {
+      "status": "no_change",
+      "reason": "A and B supply premium and six-month coverage; C financing is separate."
+    },
+    "A032-12-b": {
+      "status": "no_change",
+      "reason": "A and B directly specify reversed billing; C is financing."
+    },
+    "A032-12-e": {
+      "status": "no_change",
+      "reason": "A/B/D support underwriting result; C financing is explicitly excluded."
+    },
+    "A032-24-f": {
+      "status": "no_change",
+      "reason": "A/B and the question's 5% discount support PV; C carrying values irrelevant."
+    },
+    "A032-26-b": {
+      "status": "no_change",
+      "reason": "A supplies fee and service allocation; E is erroneous presentation."
+    },
+    "A032-26-c": {
+      "status": "no_change",
+      "reason": "A/B supply fee allocation and redemption; E is erroneous presentation."
+    },
+    "A032-26-d": {
+      "status": "no_change",
+      "reason": "A/B supply allocation and unredeemed share; E is erroneous presentation."
+    },
+    "A032-26-f": {
+      "status": "no_change",
+      "reason": "A/B/C supply earned fees, interchange and costs; E is erroneous presentation."
+    },
+    "A034-11-a": {
+      "status": "no_change",
+      "reason": "A/B supply original EIR and first payment; C repeats formula."
+    },
+    "A034-16-c": {
+      "status": "no_change",
+      "reason": "A/B supply valuation inputs; D sensitivity scenario is not base."
+    },
+    "A034-16-d": {
+      "status": "no_change",
+      "reason": "A/B/C supply base valuation and rest NAV; D sensitivity scenario irrelevant."
+    },
+    "A035-20-a": {
+      "status": "no_change",
+      "reason": "A/B supply historical rate and delivered amount; C later FX not used."
+    },
+    "A035-20-b": {
+      "status": "no_change",
+      "reason": "A/B/E supply remaining prepaid liability and historical measurement; C cancellation FX not used."
+    }
+  }
+}

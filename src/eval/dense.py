@@ -14,14 +14,15 @@ import argparse
 import json
 from pathlib import Path
 
-from src.eval.financebench import read_jsonl
+from src.eval.financebench import read_jsonl, gold_pages
+import hashlib
 
 
 def score_retrieval(qa, outputs, k):
+    if len(qa)!=len(outputs):raise ValueError("Retrieval output count mismatch")
     total=0;doc_hits=0;page_hits=0;all_gold_pages=0
     for item,got in zip(qa,outputs):
-        gold={(e.get("doc_name",item["doc_name"]),int(e["evidence_page_num"]))
-              for e in item.get("evidence",[]) if e.get("evidence_page_num") is not None}
+        gold=gold_pages(item)
         if not gold:continue
         retrieved={(x["doc_id"],x["page"]) for x in got[:k]}
         total+=1
@@ -55,6 +56,7 @@ def make_index(chunks_path,index_path,model_name="BAAI/bge-m3",device=None,batch
     path=Path(index_path);path.parent.mkdir(parents=True,exist_ok=True)
     np.savez_compressed(path,vectors=vectors,ids=np.asarray([r["chunk_id"] for r in rows]))
     metadata={"model":model_name,"rows":len(rows),"embedding_dims":int(vectors.shape[1]),
+              "chunks_sha256":hashlib.sha256(Path(chunks_path).read_bytes()).hexdigest(),
               "source":"original_pdf_chunks_only","note":"Do not insert QA answers or evidence annotations into embeddings."}
     (path.with_suffix(".manifest.json")).write_text(json.dumps(metadata,indent=2)+"\n",encoding="utf-8")
     return metadata
@@ -79,6 +81,8 @@ def evaluate(qa_path,chunks_path,index_path,model_name,k=10,oracle_doc=False,
     if ids!=[r["chunk_id"] for r in rows]:
         raise ValueError("Chunk ids/order differ from the embedding index; rebuild")
     manifest=json.loads(Path(index_path).with_suffix(".manifest.json").read_text())
+    if manifest.get("chunks_sha256")!=hashlib.sha256(Path(chunks_path).read_bytes()).hexdigest():
+        raise ValueError("Chunk content differs from stored index; rebuild")
     if manifest["model"]!=model_name:raise ValueError("Model mismatch with stored embeddings")
     model=SentenceTransformer(model_name,device=device)
     query_texts=[((x.get("company","")+" ") if include_company else "")+x["question"] for x in qa]
