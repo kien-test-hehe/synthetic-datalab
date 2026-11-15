@@ -13,7 +13,7 @@ class CalculatorTests(unittest.TestCase):
 
 class CanonicalTests(unittest.TestCase):
     def fixture(self):
-        base={"id":"old","case_id":"case","split":"train","source":"original_fictional_hand_authored","sector":"retail",
+        base={"id":"old","question":"Growth?","case_id":"case","split":"train","source":"original_fictional_hand_authored","sector":"retail",
               "evidence":[{"id":"A","text":"Revenue 2025 100; 2024 80."}],"accounting_assumptions":"USD","oracle":{"kind":"numeric","value":25,"unit":"percent"}}
         rec={"parent_id":"old","question":"Growth?","task":"basic_reasoning","difficulty":"easy","language":{"context":"en","question":"en","answer":"en"},
              "gold":{"answer":"25%.","short":["(100-80)/80*100."],"detailed":["Use A's current and prior values."],"citations":["A"],
