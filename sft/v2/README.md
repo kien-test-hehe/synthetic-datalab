@@ -1,7 +1,7 @@
-# FinancialDocLab V2 (11,000-QA pilot)
+# FinancialDocLab V2 (12,000-QA corpus; pilot validation status)
 
 V1 remains immutable. The independent 500-dev/1,000-test benchmark is frozen.
-This checkpoint contains 11,000 canonical QA: 9,164 individual V1 revisions and 1,836 new fictional QA. The remaining 836 V1 rows are not upgraded automatically. The full V2 target remains 12,000 canonical QA (10,000 V1 revisions and 2,000 new fictional QA). V2 only exports individually authored revisions/new rows from batches/*.jsonl;
+This checkpoint completes the 12,000 canonical QA authoring target: 10,000 individual V1 revisions and 2,000 new fictional QA. The unreviewed V1 backlog is empty. Corpus completion is not an independent financial expert certification or a trained-model release. V2 only exports individually authored revisions/new rows from batches/*.jsonl;
 unreviewed V1 rows are explicitly listed in the backlog, never silently upgraded.
 
 Each revision pins a parent ID. Evidence, assumptions and oracle are inherited
@@ -11,7 +11,7 @@ authored. New fictional rows specify all evidence and oracle. All variants of a
 counterfactual family share case_group. No crawled financial documents enter SFT.
 
 The calculator supports a bounded arithmetic AST and named operands with source
-IDs. An explicit @assumptions operand source is supported only for a numeric token present in the scenario assumptions; it is not an evidence citation. This validates token presence, not semantic extraction. Numeric rows need executable verification against their oracle. Source-ID
+IDs. Explicit @assumptions and @question operand sources are supported for grounded numeric parameters; neither is an evidence citation. For V1 revisions, @question must also match the frozen original question. Decimal-comma tokens are supported. The bounded calculator permits floor(x) and min(x,y), but no arbitrary function calls; it supports up to 32 operands, 200 AST nodes and depth 32 for multi-line reconciliation. This validates token presence, not semantic extraction. Numeric rows need executable verification against their oracle. Source-ID
 checks are not proof that values are correctly extracted from evidence; review
 the labels and evidence manually. Independent review and language verification
 are not claimed. Exact question, evidence-block and case checks against both
@@ -133,3 +133,18 @@ Artifact 14157112224 from commit 09eb3637d3877fded8ca7c7bb062c84905205bf7 (run 4
 Exports: canonical 11,000; SFT Lite and Lite Answer-only 9,923 each; SFT Reasoning and Reasoning Answer-only 11,000 each; Calculator Lite 15,973; Calculator Reasoning 17,977; matched V1 control 9,164; full V1 control 10,000. Cases 1,331; case groups 1,322. Answer languages: 5,503 English and 5,497 Vietnamese. Oracle kinds: 6,977 numeric, 125 multi-numeric, 2,065 qualitative, 1,833 insufficient. No independent expert certification or GPU training result is claimed.
 
 Remaining target: 836 V1 revisions and 164 new fictional QA (1,000 total). Larger V1 groups: A010 124, A009 120, A005 100, A006 78, A007 76, A037 64; remaining 274 in other groups.
+
+
+## 12,000-QA final authoring checkpoint
+
+Exactly 1,000 canonical rows added: 836 individually authored V1 rewrites in m7_167–m7_195, and 164 new fictional QA in m8_035–m8_037 (V2-N225–V2-N243). All 10,000 V1 parent IDs are now covered exactly once. New fictional QA have their own evidence and oracle. Code serializes explicitly authored material, checks arithmetic, and builds variants; no bulk content generation.
+
+Final corpus: 12,000 QA, 1,588 cases, 1,579 case groups; 5,971 Vietnamese and 6,029 English answers. Oracle kinds: 7,608 numeric, 125 multi-numeric, 2,270 qualitative, 1,997 insufficient. Difficulty labels: 1,917 easy, 8,917 medium, 1,166 hard. These are author declarations, not measured difficulty.
+
+Artifact 14159382120, commit ceb6a9e0de134890a24ef2c9b0a7e5d1493c4d8d, V2 workflow 43708614863. All four workflows on that commit passed. An independent audit script re-evaluated 7,858 programs with 31,781 operands, finding zero arithmetic mismatches or errors. All ten export row counts and SHA-256 checks passed, ZIP integrity passed, no duplicate canonical IDs, no missing V1 parents, zero backlog. Compared against the 11,000 snapshot: exactly 1,000 additions, zero removals, one prior canonical change (V2-N114-h, corrected malformed inline citation), byte-identical V1 full control. The frozen independent benchmark workflow also passed.
+
+Changes to the export and calculation machinery: answer-only outputs now preserve missing-information fields for abstention and all numeric results for multi-result questions; regression tests added. Fixed a malformed inline citation, parent-ID padding in newly authored batches, decimal-comma source token handling; added explicit question provenance and bounded floor/min operations for discrete bids. No frozen oracle edits. Some concise and detailed rationales intentionally share their authored core explanation with citation formatting.
+
+The audit's locale-aware operand literal screen flagged 19 occurrences: calendar-derived durations, unit scaling (3 nghin to 3,000), non-leap-year day counts, and integer bid increments. These were inspected against the supplied evidence/assumptions and are not arithmetic failures. A broad numeric-answer-text screen flagged only the word "Zero." for a numeric oracle of 0. This screen cannot validate sign, units or reasoning semantically. Fourteen identical-question clusters were found: eight deliberate counterfactual-family clusters and six short generic questions with distinct contexts. No identical normalized evidence-context clusters across different case groups. The benchmark lexical screen still has the two existing candidates at Jaccard 0.75; semantic separation is not guaranteed.
+
+Exports: canonical 12,000; SFT Lite / Lite Answer-only 10,834 each; SFT Reasoning / Reasoning Answer-only 12,000 each; Calculator Lite 17,456; Calculator Reasoning 19,608; matched and full V1 control 10,000 each; unreviewed backlog 0. Variants are alternative training configurations, not additional unique QA. Manifest retains v2-pilot/pilot_not_full_release to distinguish completed authoring from independent certification. Independent expert review, complete semantic validation, tokenizer-specific length validation and model training remain outstanding.
