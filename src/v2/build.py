@@ -148,7 +148,14 @@ def messages(row,system,user,target,variant):
 def direct(row,profile,final_only=False):
     target=output(row,profile)
     if final_only:
-        target["answer"]=row["gold"]["answer"]
+        # Keep the requested conclusion compact, but do not strip essential
+        # missing fields or structured multi-result values.
+        g=row["gold"]; kind=row["oracle"]["kind"]
+        target["answer"]=g["answer"]
+        if kind=="insufficient":
+            target["answer"]+=" "+("Thiếu: " if row["language"]["answer"]=="vi" else "Missing: ")+"; ".join(g["missing"])+"."
+        if kind=="multi_numeric":
+            target["answer"]+=" "+json.dumps([{k:v for k,v in x.items() if k!="program"} for x in g["results"]],ensure_ascii=False)
     return messages(row,SYSTEM[row["language"]["answer"]]+"\n"+SCHEMA,user_text(row),target,profile+("-final-only" if final_only else ""))
 def calculator_rows(row,profile):
     p=row["gold"].get("program")
