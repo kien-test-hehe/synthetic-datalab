@@ -1,7 +1,7 @@
-# FinancialDocLab V2 (10,000-QA pilot)
+# FinancialDocLab V2 (10,358-QA pilot)
 
 V1 remains immutable. The independent 500-dev/1,000-test benchmark is frozen.
-This checkpoint contains 10,000 canonical QA: 8,380 individual V1 revisions and 1,620 new fictional QA. The remaining 1,620 V1 rows are not upgraded automatically. The full V2 target remains 12,000 canonical QA (10,000 V1 revisions and 2,000 new fictional QA). V2 only exports individually authored revisions/new rows from batches/*.jsonl;
+This checkpoint contains 10,358 canonical QA: 8,684 individual V1 revisions and 1,674 new fictional QA. The remaining 1,316 V1 rows are not upgraded automatically. The full V2 target remains 12,000 canonical QA (10,000 V1 revisions and 2,000 new fictional QA). V2 only exports individually authored revisions/new rows from batches/*.jsonl;
 unreviewed V1 rows are explicitly listed in the backlog, never silently upgraded.
 
 Each revision pins a parent ID. Evidence, assumptions and oracle are inherited
@@ -105,3 +105,16 @@ The 10,000-row artifact from commit 6986676819e9b249bbf83b350adf11b3629bef0b (wo
 Exports: canonical 10,000; SFT Lite and Lite Answer-only 8,996 each; SFT Reasoning and Reasoning Answer-only 10,000 each; Calculator Lite 14,437; Calculator Reasoning 16,295; matched V1 control 8,380; full V1 control 10,000. There are 1,236 cases and 1,227 case groups. No independent expert validation, accounting compliance guarantee, semantic leakage guarantee, or GPU training result is claimed.
 
 Remaining target: 1,620 V1 revisions and 380 new fictional QA (2,000 total).
+
+
+## 10,358-QA checkpoint
+
+Added 358 canonical QA: 304 individually authored V1 revisions (m7_150–m7_157, completing the A039 and A022 backlogs) and 54 new fictional QA (m8_031, V2-N201–V2-N206). The increment includes 230 numeric, 68 qualitative, and 60 insufficient-evidence answers; 219 English and 139 Vietnamese answers. Author difficulty labels: 2 easy, 335 medium, 21 hard. Tasks: 186 multi-document, 60 abstention, 39 advanced reasoning, 35 conflict, 33 financial explanation, 2 temporal, 2 evidence selection and 1 unit conversion.
+
+Coverage includes long-context audited financial reporting, consolidation, bank regulatory ratios under toy definitions, environmental scope boundaries, marketplace GMV, counterparty impairment, REIT AFFO, private-fund multiples, hospital and telecom metrics, aviation economics, survey response bounds, mining and electricity reliability, and treasury instruments. The six new fictional cases cover data-center energy efficiency, preference dividends and EPS, premium refunds, concession accounting, asset-management fees and pharmacy inventory. Two insufficient-evidence labels and inherited evidence-language metadata were corrected without changing any frozen oracle. Some short and detailed rationales share the same individually authored core with citation formatting.
+
+Artifact 14155832528 from commit ce2547b42b173c1f7d92f1b3bb1cbf6f1e4d024c (run 43699660311) was checked against the 10,000-QA artifact: 358 added IDs, zero removed, zero changed prior canonical rows, byte-identical V1 full control, valid ZIP and all ten export counts and SHA-256 checks passed. The same two lexical similarity candidates remain; there are no additional candidates at the 0.72 threshold. The audit is not proof of semantic separation.
+
+Exports: canonical 10,358; SFT Lite and Lite Answer-only 9,333 each; SFT Reasoning and Reasoning Answer-only 10,358 each; Calculator Lite 14,983; Calculator Reasoning 16,883; matched V1 control 8,684; full V1 control 10,000. Cases: 1,265; case groups: 1,256. No independent expert certification, accounting compliance or training success is claimed.
+
+Remaining target: 1,316 V1 revisions and 326 new fictional QA (1,642 total).
