@@ -22,7 +22,7 @@ def number(v):
 def calculate(expression, operands):
     if not isinstance(expression,str) or not 1<=len(expression)<=400:
         raise ValueError("Invalid expression length")
-    if not isinstance(operands,dict) or not 1<=len(operands)<=24:
+    if not isinstance(operands,dict) or not 1<=len(operands)<=32:
         raise ValueError("Invalid operand count")
     if any(not isinstance(k,str) or not NAME.fullmatch(k) for k in operands):
         raise ValueError("Invalid operand name")
@@ -31,11 +31,11 @@ def calculate(expression, operands):
         root=ast.parse(expression,mode="eval")
     except (SyntaxError,RecursionError) as exc:
         raise ValueError("Invalid expression") from exc
-    if sum(1 for _ in ast.walk(root))>120:
+    if sum(1 for _ in ast.walk(root))>200:
         raise ValueError("Expression too complex")
     used=set()
     def walk(node,depth=0):
-        if depth>20:
+        if depth>32:
             raise ValueError("Expression too deep")
         if isinstance(node,ast.Name) and node.id in values:
             used.add(node.id)
