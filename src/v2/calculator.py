@@ -76,6 +76,6 @@ def assumption_has_number(assumptions,value):
         except (ValueError,OverflowError):continue
     # Decimal-comma values in Vietnamese source text, excluding ambiguous
     # three-digit groups (which may be thousands separators).
-    for token in re.findall(r"(?<![0-9.,])[+-]?[0-9]+,[0-9]{1,2}(?![0-9.,])",assumptions):
+    for token in re.findall(r"(?<![0-9.,])[+-]?[0-9]+,[0-9]{1,2}(?![0-9]|[.,][0-9])",assumptions):
         if math.isclose(float(token.replace(",",".")),target,rel_tol=1e-12,abs_tol=1e-12):return True
     return False
