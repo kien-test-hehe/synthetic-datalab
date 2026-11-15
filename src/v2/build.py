@@ -113,13 +113,13 @@ def canonical(record,base=None):
             require(nonempty(item["name"]) and nonempty(item["unit"]),rid+": result metadata")
             value,unit=expected[item["name"]]
             require(math.isclose(number(item["value"]),number(value),rel_tol=1e-8,abs_tol=1e-6) and unit==item["unit"],rid+": multi-result mismatch")
-            verify_program(item["program"],cites,item["value"],rid+":"+item["name"],row["accounting_assumptions"])
+            verify_program(item["program"],cites,item["value"],rid+":"+item["name"],row["accounting_assumptions"],row["question"],base["question"] if parent else row["question"])
     else:
         require(not gold.get("results"),rid+": unexpected results")
     program=gold.get("program")
     if program:
         require(kind=="numeric",rid+": only numeric calculator rows")
-        verify_program(program,cites,oracle["value"],rid,row["accounting_assumptions"])
+        verify_program(program,cites,oracle["value"],rid,row["accounting_assumptions"],row["question"],base["question"] if parent else row["question"])
     if row["task"]=="calculator":
         require(program is not None,rid+": calculator task requires program")
     if kind=="numeric":
