@@ -1,4 +1,4 @@
-"""Bounded arithmetic DSL. No eval/exec, imports, attributes or arbitrary calls."""
+"""Bounded arithmetic DSL. No eval/exec, imports, attributes or arbitrary calls. Explicit floor/min are whitelisted."""
 from __future__ import annotations
 import ast
 import math
@@ -50,6 +50,11 @@ def calculate(expression, operands):
                 return number(OPS[type(node.op)](walk(node.left,depth+1),walk(node.right,depth+1)))
             except (ZeroDivisionError,OverflowError) as exc:
                 raise ValueError("Invalid arithmetic") from exc
+        if isinstance(node,ast.Call) and isinstance(node.func,ast.Name) and not node.keywords:
+            if node.func.id=="floor" and len(node.args)==1:
+                return number(math.floor(walk(node.args[0],depth+1)))
+            if node.func.id=="min" and len(node.args)==2:
+                return min(walk(node.args[0],depth+1),walk(node.args[1],depth+1))
         if isinstance(node,ast.UnaryOp) and isinstance(node.op,(ast.USub,ast.UAdd)):
             v=walk(node.operand,depth+1)
             return -v if isinstance(node.op,ast.USub) else v
