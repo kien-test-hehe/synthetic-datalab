@@ -85,9 +85,9 @@ class CanonicalTests(unittest.TestCase):
         self.assertFalse(assumption_has_number("Giá 1,8 triệu",1.9))
 
 
-def test_bounded_bid_calculation():
-    assert calculate("floor(min(economic,budget)/step)*step",{"economic":34.258385,"budget":55,"step":1})==34
-    import pytest
-    with pytest.raises(ValueError):calculate("floor(x, x)",{"x":1})
-    with pytest.raises(ValueError):calculate("min(x,x,x)",{"x":1})
-    with pytest.raises(ValueError):calculate("max(x,x)",{"x":1})
+class DiscreteCalculatorTests(unittest.TestCase):
+    def test_bounded_bid(self):
+        self.assertEqual(calculate("floor(min(economic,budget)/step)*step",{"economic":34.258385,"budget":55,"step":1}),34)
+        for expr in ["floor(x, x)","min(x,x,x)","max(x,x)","floor.__call__(x)"]:
+            with self.subTest(expr=expr), self.assertRaises(ValueError):
+                calculate(expr,{"x":1})
