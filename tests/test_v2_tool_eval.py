@@ -30,3 +30,9 @@ class ToolEvaluationTests(unittest.TestCase):
         _,stats=calculator_call(messages,["A"],"en",generate)
         self.assertIsNone(stats["calculator_result"])
         self.assertEqual(calls[1],messages)
+
+    def test_explicit_question_parameter(self):
+        from src.v2.runtime import run_plan
+        plan={"status":"answerable","operands":{"sales":{"value":90,"evidence_id":"A","label":"sales"},"shock":{"value":20,"evidence_id":"@question","label":"stress reduction"}},"expression":"sales-shock","unit":"million_usd","citations":["A"]}
+        self.assertEqual(run_plan(plan,["A"],question="Reduce sales by 20.")["value"],70)
+        with self.assertRaises(ValueError):run_plan(plan,["A"],question="Reduce sales.")

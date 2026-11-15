@@ -69,3 +69,17 @@ class CanonicalTests(unittest.TestCase):
         self.assertIsNone(a["unit"])
         self.assertIn('"name": "current"',a["answer"])
         self.assertNotIn('"program"',a["answer"])
+
+    def test_question_operand_requires_original_parameter(self):
+        rec,base=self.fixture()
+        base["question"]="Growth versus 80?"
+        rec["question"]="Compare against 80; growth?"
+        rec["gold"]["program"]["operands"]["prior"]["evidence_id"]="@question"
+        self.assertEqual(canonical(rec,base)["oracle"]["value"],25)
+        base["question"]="Growth?"
+        with self.assertRaises(ValueError):canonical(rec,base)
+
+    def test_decimal_comma_assumption(self):
+        from src.v2.calculator import assumption_has_number
+        self.assertTrue(assumption_has_number("Giá 1,8 triệu",1.8))
+        self.assertFalse(assumption_has_number("Giá 1,8 triệu",1.9))

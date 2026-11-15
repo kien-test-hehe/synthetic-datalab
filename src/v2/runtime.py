@@ -1,7 +1,7 @@
 """Validate and execute only supported calculator plans; never run arbitrary code."""
-from src.v2.calculator import calculate,ASSUMPTION_REF,assumption_has_number
+from src.v2.calculator import calculate,ASSUMPTION_REF,QUESTION_REF,assumption_has_number
 
-def run_plan(plan,allowed_citations,assumptions=None):
+def run_plan(plan,allowed_citations,assumptions=None,question=None):
     if not isinstance(plan,dict) or set(plan)!={"status","operands","expression","unit","citations"} or plan["status"] not in ("answerable","direct","insufficient"):
         raise ValueError("Invalid calculator plan")
     cites=plan["citations"]
@@ -22,6 +22,8 @@ def run_plan(plan,allowed_citations,assumptions=None):
             raise ValueError("Invalid operand source reference")
         if v["evidence_id"]==ASSUMPTION_REF:
             if not assumption_has_number(assumptions,v["value"]):raise ValueError("Unsupported assumption operand")
+        elif v["evidence_id"]==QUESTION_REF:
+            if not assumption_has_number(question,v["value"]):raise ValueError("Unsupported question operand")
         elif v["evidence_id"] not in cites:
             raise ValueError("Invalid operand source reference")
         values[k]=v["value"]
