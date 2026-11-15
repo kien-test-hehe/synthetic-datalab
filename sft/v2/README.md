@@ -1,7 +1,7 @@
-# FinancialDocLab V2 (7,000-QA pilot)
+# FinancialDocLab V2 (9,000-QA pilot)
 
 V1 remains immutable. The independent 500-dev/1,000-test benchmark is frozen.
-This checkpoint contains 7,000 canonical QA: 5,866 individual V1 revisions and 1,134 new fictional QA. The remaining 4,134 V1 rows are not upgraded automatically. The full V2 target remains 12,000 canonical QA (10,000 V1 revisions and 2,000 new fictional QA). V2 only exports individually authored revisions/new rows from batches/*.jsonl;
+This checkpoint contains 9,000 canonical QA: 7,542 individual V1 revisions and 1,458 new fictional QA. The remaining 2,458 V1 rows are not upgraded automatically. The full V2 target remains 12,000 canonical QA (10,000 V1 revisions and 2,000 new fictional QA). V2 only exports individually authored revisions/new rows from batches/*.jsonl;
 unreviewed V1 rows are explicitly listed in the backlog, never silently upgraded.
 
 Each revision pins a parent ID. Evidence, assumptions and oracle are inherited
@@ -79,3 +79,16 @@ The new fictional cases cover import duties/VAT, syndicated lending, roaming set
 The 7,000-row artifact was compared against the 6,000-row artifact: exactly 1,000 added IDs, zero removed, zero changed prior canonical rows, and byte-identical full V1 control. The lexical audit still reports two candidates at Jaccard 0.75 (V2-N066-d / IE-D07-c and V2-N117-f / M4-10-a); no additional candidates appeared at the 0.72 threshold. Semantic review remains required. No independent financial expert certification or fine-tuning result is claimed.
 
 Remaining target: 4,134 V1 revisions and 866 new fictional QA (5,000 total).
+
+
+## 9,000-QA checkpoint
+
+The combined 7,000-to-9,000 increment adds exactly 2,000 canonical rows: 1,676 individually authored V1 revisions (m7_109–m7_135) and 324 new fictional QA (m8_022–m8_027, V2-N147–V2-N182, 36 new case groups). The final 548-row increment from the independently verified 8,452 snapshot comprises 386 V1 revisions and 162 fictional QA. Duplicate parent candidates were removed; decimal-comma source references, reserved calculator names, allowed literals and unit scales were corrected without changing V1 oracles.
+
+The full 2,000-row increment contains 1,158 numeric, 429 qualitative and 413 insufficient-evidence QA; 1,024 Vietnamese and 976 English answers; 26 easy, 1,798 medium and 176 hard. The final 548-row increment adds 222 advanced reasoning, 114 abstention, 103 financial explanation, 93 multi-document, 12 conflict and 4 evidence selection tasks. The difficulty and task distributions are author labels, not measured model difficulty. Coverage includes consolidation and reporting corrections, valuation (DCF, FCFE, WACC, APV, residual income), scenario-weighted ECL, capacity decisions, pension OCI, acquisition consideration, supplier rebates, and cash-versus-accrual judgment.
+
+The 9,000-row artifact from commit 9cd76a712b05879f0ca09ce3e59b5bfa254669ea (workflow run 43666262914) was independently compared with the 7,000 and 8,452 artifacts: exactly 2,000 and 548 new IDs respectively, zero prior canonical rows removed or changed, byte-identical full V1 control, valid ZIP integrity and all export SHA-256 checks passed. The lexical audit still identifies the same two candidates at Jaccard 0.75; it is screening only and does not prove semantic separation.
+
+Exports: canonical 9,000; SFT Lite and Lite Answer-only 8,013 each; SFT Reasoning and Reasoning Answer-only 9,000 each; Calculator Lite 12,931; Calculator Reasoning 14,755; matched V1 control 7,542; full V1 control 10,000. Calculator variants include multiple training examples for some canonical QA and are not additional unique questions. Total cases 1,114; case groups 1,105. No independent financial expert certification, real-world accounting compliance, or successful model training is claimed.
+
+Remaining target: 2,458 V1 revisions and 542 new fictional QA (3,000 total).
