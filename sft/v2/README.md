@@ -1,7 +1,7 @@
-# FinancialDocLab V2 (10,358-QA pilot)
+# FinancialDocLab V2 (11,000-QA pilot)
 
 V1 remains immutable. The independent 500-dev/1,000-test benchmark is frozen.
-This checkpoint contains 10,358 canonical QA: 8,684 individual V1 revisions and 1,674 new fictional QA. The remaining 1,316 V1 rows are not upgraded automatically. The full V2 target remains 12,000 canonical QA (10,000 V1 revisions and 2,000 new fictional QA). V2 only exports individually authored revisions/new rows from batches/*.jsonl;
+This checkpoint contains 11,000 canonical QA: 9,164 individual V1 revisions and 1,836 new fictional QA. The remaining 836 V1 rows are not upgraded automatically. The full V2 target remains 12,000 canonical QA (10,000 V1 revisions and 2,000 new fictional QA). V2 only exports individually authored revisions/new rows from batches/*.jsonl;
 unreviewed V1 rows are explicitly listed in the backlog, never silently upgraded.
 
 Each revision pins a parent ID. Evidence, assumptions and oracle are inherited
@@ -118,3 +118,18 @@ Artifact 14155832528 from commit ce2547b42b173c1f7d92f1b3bb1cbf6f1e4d024c (run 4
 Exports: canonical 10,358; SFT Lite and Lite Answer-only 9,333 each; SFT Reasoning and Reasoning Answer-only 10,358 each; Calculator Lite 14,983; Calculator Reasoning 16,883; matched V1 control 8,684; full V1 control 10,000. Cases: 1,265; case groups: 1,256. No independent expert certification, accounting compliance or training success is claimed.
 
 Remaining target: 1,316 V1 revisions and 326 new fictional QA (1,642 total).
+
+
+## 11,000-QA checkpoint
+
+Added 642 individually authored canonical QA: 480 V1 revisions (m7_158–m7_166) and 162 new fictional QA (m8_032–m8_034, 18 groups V2-N207–V2-N224). Completed all 240 A040 transaction-audit parents, 230 of the 240 A012 parents, and ten early M1 parents. The ten remaining A012 rows include question-only parameters and decimal-comma assumptions that require careful operand provenance; they have not been exported automatically. The reserved calculator operand name in A040-16 was corrected without changing its arithmetic or frozen oracle.
+
+Increment: 452 numeric, 105 qualitative, 85 insufficient; 334 English, 308 Vietnamese. Author difficulty labels: 1 easy, 589 medium, 52 hard. Tasks: 322 multi-document, 125 advanced reasoning, 85 abstention, 69 financial explanation, 36 conflict, 3 evidence selection and 2 temporal. These labels are author declarations, not measured model difficulty. Some short/detailed explanations share one individually authored rationale with citation formatting.
+
+Topics include goodwill, VAT, working capital, interest rate swaps, deferred fees, discounted collateral recovery, credit loss, bond convexity, rights-of-use, inventory rebates, true-sale and secured financing, insurance cancellations, share-class NAV, bundled service contracts, commodity provisional pricing, customer-funded infrastructure, and fictional cases covering effective interest, component replacement, annual stop-loss, tax-loss utilization, batteries, reagent inventory, undrawn facilities, paid leave, segregated client funds, take-or-pay and rehabilitation provisions.
+
+Artifact 14157112224 from commit 09eb3637d3877fded8ca7c7bb062c84905205bf7 (run 43702253185) was checked against the 10,358-QA artifact: 642 added IDs, zero removed, zero changed prior canonical rows, byte-identical V1 full control, ZIP integrity and all ten export counts and SHA-256 checks passed. The same two lexical candidates remain at Jaccard 0.75; no additional candidates at threshold 0.72. Semantic separation is not established by this audit.
+
+Exports: canonical 11,000; SFT Lite and Lite Answer-only 9,923 each; SFT Reasoning and Reasoning Answer-only 11,000 each; Calculator Lite 15,973; Calculator Reasoning 17,977; matched V1 control 9,164; full V1 control 10,000. Cases 1,331; case groups 1,322. Answer languages: 5,503 English and 5,497 Vietnamese. Oracle kinds: 6,977 numeric, 125 multi-numeric, 2,065 qualitative, 1,833 insufficient. No independent expert certification or GPU training result is claimed.
+
+Remaining target: 836 V1 revisions and 164 new fictional QA (1,000 total). Larger V1 groups: A010 124, A009 120, A005 100, A006 78, A007 76, A037 64; remaining 274 in other groups.
